@@ -92,7 +92,7 @@ public class Constants {
     }
 
     public static class Elevator {
-        public static double[] States = {1, 13, 24, 38, 62};
+        public static double[] States = {0, 13, 22, 38, 62};
 
         public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE =
             new TrapezoidProfile.Constraints(300.0, 100.0);
@@ -126,9 +126,9 @@ public class Constants {
         public static double RAISED_SETPOINT = 30;
         public static double LOWERED_SETPOINT = 0;
 
-        public static final int KP = 1;
-        public static final int KI = 0;
-        public static final int KD = 0;
+        public static final double KP = 0.05;
+        public static final double KI = 0;
+        public static final double KD = 0;
 
         public static class Ports {
             public static final int INTAKE_MOTOR_1 = 0;

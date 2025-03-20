@@ -187,10 +187,10 @@ public class Robot extends LoggedRobot {
             Logger.recordOutput("Alignment/StartPose", firstPose);
             SmartDashboard.putBoolean("Alignment/Translation",
                 firstPose.getTranslation().getDistance(
-                    m_robotContainer.m_drive.getPose().getTranslation()) <= Units
+                    m_robotContainer.swerveDrivetrain.getPose().getTranslation()) <= Units
                         .inchesToMeters(1.5));
             SmartDashboard.putBoolean("Alignment/Rotation",
-                firstPose.getRotation().minus(m_robotContainer.m_drive.getPose().getRotation())
+                firstPose.getRotation().minus(m_robotContainer.swerveDrivetrain.getPose().getRotation())
                     .getDegrees() < 1);
         }
     }
@@ -232,7 +232,9 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic()
-    {}
+    {
+        m_robotContainer.teleopPeriodic();
+    }
 
     /** This function is called once when test mode is enabled. */
     @Override

@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
 import frc.robot.MathUtils;
@@ -16,7 +19,7 @@ public class Elevator extends SubsystemBase {
     private final PWMSparkMax motor2 = new PWMSparkMax(Ports.MOTOR_2);
     Encoder encoder = new Encoder(Ports.ENCODER_CHANNEL_A, Ports.ENCODER_CHANNEL_B, ENCODER_REVERSED, ENCODER_ENCODING_TYPE);
 
-    private final ProfiledPIDController elevatorPID = new ProfiledPIDController(KP, KI, KD, ELEVATOR_TRAPEZOID_PROFILE);
+    public final ProfiledPIDController elevatorPID = new ProfiledPIDController(KP, KI, KD, ELEVATOR_TRAPEZOID_PROFILE);
     public int currentState = 0;
     private double manualAdjustAmount = 0.0;
     private double lastTime = 0;
@@ -31,9 +34,14 @@ public class Elevator extends SubsystemBase {
         transitionToState(currentState);
     }
 
-    public void teleopPeriodic() {
+    @Override
+    public void periodic() {
         double pidOutput = elevatorPID.calculate(getElevatorPosition());
-        setMotors(pidOutput + KG);
+        if (currentState == 0 && Math.abs(getElevatorPosition()) < 2.0) {
+            setMotors(pidOutput);
+        } else {
+            setMotors(pidOutput + KG);
+        }
     }
 
     public double getElevatorPosition() {
@@ -76,6 +84,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setMotors(double power) {
+        power = MathUtil.clamp(power, 0, 1);
         motor1.set(power);
         motor2.set(power);
     }
@@ -102,8 +111,20 @@ public class Elevator extends SubsystemBase {
         updateManualAdjust();
     }
 
-    public void debug() {
-        Debug.println("Encoder Distance: ", encoder.getDistance(), "  P Error: ", elevatorPID.getPositionError(), "  I Error: ", elevatorPID.getAccumulatedError(), "  Motor Power", motor1.get());
+    public Command waitForElevator() {
+        return Commands.waitUntil( ()-> {
+            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+            return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 5.0;
+        });
+    }
+
+
+
+    public Command waitForElevatorPrecise() {
+        return Commands.waitUntil( ()-> {
+            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+            return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 1.0;
+        });
     }
 
     public void toggleHigh() {

@@ -53,6 +53,15 @@ public class Debug {
         map.put(key, i);
         
     }
+    public static void dprintln(String key, Object... args) {
+        Integer i = map.get(key);
+        if (i == null ) {
+            i=0;
+        }
+        if (i++%10==0) {
+            println(args);
+        }
+    }
 
     public static void println(Object... args) {
         StringBuilder output = new StringBuilder();

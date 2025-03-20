@@ -6,8 +6,8 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import java.util.function.BooleanSupplier;
 
@@ -15,8 +15,7 @@ import static frc.robot.Constants.Pickup.*;
 
 
 public class Pickup extends SubsystemBase {
-    private final SparkMax intakeMotor1 = new SparkMax(Ports.INTAKE_MOTOR_1, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax intakeMotor2 = new SparkMax(Ports.INTAKE_MOTOR_2, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax pickupMotor = new SparkMax(Constants.Pickup.Ports.DELIVERY_MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
     private final TalonFX rotationMotor = new TalonFX(Ports.ROTATION_MOTOR);
     public final PIDController rotationPID = new PIDController(KP, KI, KD);
 
@@ -33,14 +32,10 @@ public class Pickup extends SubsystemBase {
     
     public Pickup() {
         rotationPID.reset();
-        SparkMaxConfig intakeMotor1Config = new SparkMaxConfig();
-        intakeMotor1Config.inverted(MOTOR_1_INVERTED);
-        SparkMaxConfig intakeMotor2Config = new SparkMaxConfig();
-        intakeMotor2Config.inverted(MOTOR_2_INVERTED);
-        intakeMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
-        intakeMotor2Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
-        intakeMotor1.configure(intakeMotor1Config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
-        intakeMotor2.configure(intakeMotor2Config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        SparkMaxConfig pickupMotor1Config = new SparkMaxConfig();
+        pickupMotor1Config.inverted(MOTOR_1_INVERTED);
+        pickupMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
+        pickupMotor.configure(pickupMotor1Config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         stopIntake();
     }
 
@@ -70,21 +65,11 @@ public class Pickup extends SubsystemBase {
     }
 
     public void setIntakeMotors(double power) {
-        intakeMotor1.set(power);
-        intakeMotor2.set(power);
+        pickupMotor.set(power);
     }
 
     public BooleanSupplier isNotExtended() {
         return () -> (rotationPID.getSetpoint() != RAISED_SETPOINT);
     }
 
-    public Command stopIntakeCmd() {
-        return runOnce(() -> {stopIntake();});
-    }
-    public Command runIntakeInCmd() {
-        return runOnce(() -> {runIntakeIn();});
-    }
-    public Command runIntakeOutCmd() {
-        return runOnce(() -> {runIntakeOut();});
-    }
 }
