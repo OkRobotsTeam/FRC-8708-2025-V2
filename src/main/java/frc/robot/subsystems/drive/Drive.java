@@ -22,6 +22,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -51,8 +52,12 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision.Vision;
+
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import frc.robot.subsystems.Vision.VisionConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -110,6 +115,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     private final SwerveDrivePoseEstimator poseEstimator =
         new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions,
             new Pose2d());
+    private double speed;
 
     public Drive(
         GyroIO gyroIO,
@@ -139,7 +145,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             this::getChassisSpeeds,
             this::runVelocity,
             new PPHolonomicDriveController(
-                new PIDConstants(3, 0.0, 0), new PIDConstants(5.5, 0.0, 0.0)),
+                new PIDConstants(3, 0.0, 0), new PIDConstants(6, 0.0, 0.0)),
             PP_CONFIG,
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
             this);
@@ -369,6 +375,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         double timestampSeconds,
         Matrix<N3, N1> visionMeasurementStdDevs)
     {
+//        System.out.println("Adding pose to estimator: " + visionRobotPoseMeters);
         poseEstimator.addVisionMeasurement(
             visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
@@ -398,5 +405,42 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 new Translation2d(TunerConstants.BackRight.LocationX,
                     TunerConstants.BackRight.LocationY)
         };
+    }
+
+    public Pose2d getTranslationToNearestTag() {
+        Pose2d currentPose = getPose();
+        List<AprilTag> aprilTags = VisionConstants.aprilTagLayout.getTags();
+        AprilTag closest = null;
+        double bestDistance = Double.POSITIVE_INFINITY;
+
+        for (AprilTag tag: aprilTags) {
+            if (!VisionConstants.reefTags.contains(tag.ID)) {
+                continue;
+            }
+
+            double currentDistance = tag.pose.getTranslation().toTranslation2d().getDistance(currentPose.getTranslation());
+
+            if (currentDistance < bestDistance) {
+                bestDistance = currentDistance;
+                closest = tag;
+            }
+        }
+
+        if (closest != null) {
+            Pose2d relativePose = closest.pose.toPose2d().relativeTo(currentPose);
+            System.out.println("Closest reef tag ID: " + closest.ID);
+            System.out.println("Closest reef tag relative Pose: " + relativePose);
+            return relativePose;
+        }
+
+        return new Pose2d();
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public double  getSpeed() {
+        return speed;
     }
 }

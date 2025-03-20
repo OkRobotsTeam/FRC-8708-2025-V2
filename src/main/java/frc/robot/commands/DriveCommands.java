@@ -44,6 +44,7 @@ public class DriveCommands {
     private static final double ANGLE_KP = 5.0;
     private static final double ANGLE_KD = 0.4;
     private static final double ANGLE_MAX_VELOCITY = 8.0;
+
     private static final double ANGLE_MAX_ACCELERATION = 20.0;
     private static final double FF_START_DELAY = 2.0; // Secs
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
@@ -88,7 +89,8 @@ public class DriveCommands {
         Drive drive,
         DoubleSupplier xSupplier,
         DoubleSupplier ySupplier,
-        DoubleSupplier omegaSupplier)
+        DoubleSupplier omegaSupplier,
+        DoubleSupplier leftTrigger)
     {
         return Commands.run(
             () -> {
@@ -98,11 +100,16 @@ public class DriveCommands {
                     getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
                         ySupplier.getAsDouble());
 
+                //linearVelocity = linearVelocity.times(1 - leftTrigger.getAsDouble());
+                linearVelocity = linearVelocity.times(drive.getSpeed());
+
                 // Apply rotation deadband
                 double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
                 // Square rotation value for more precise control
                 omega = Math.copySign(omega * omega, omega);
+
+                omega = omega *drive.getSpeed();
 
                 // Convert to field relative speeds & send command
                 ChassisSpeeds speeds =
@@ -209,8 +216,8 @@ public class DriveCommands {
                 1,
                 0.0,
                 0,
-                20,
-                8);
+                2,
+                1);
         alignController.setGoal(0);
 
         // Construct command
@@ -415,4 +422,6 @@ public class DriveCommands {
         Rotation2d lastAngle = new Rotation2d();
         double gyroDelta = 0.0;
     }
+
+
 }

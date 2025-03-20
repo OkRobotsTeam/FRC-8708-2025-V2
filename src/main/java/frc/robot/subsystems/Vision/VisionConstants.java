@@ -42,19 +42,45 @@ public class VisionConstants {
     }
 
     // Camera names, must match names configured on coprocessor
-    public static String camera0Name = "front_left";
-    public static String camera1Name = "front_right";
+    public static String alignmentCameraName = "alignment_camera";
+//    public static String frontCameraName = "front_camera";
 
     // Robot to camera transforms
-    // (Not used by Limelight, configure in web UI instead)
-    public static Transform3d robotToCamera0 =
-        new Transform3d(Units.inchesToMeters(9.287), Units.inchesToMeters(10.9704),
-            Units.inchesToMeters(7.9167),
-            new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(-30)));
-    public static Transform3d robotToCamera1 =
-        new Transform3d(Units.inchesToMeters(9.287), Units.inchesToMeters(-10.9704),
-            Units.inchesToMeters(7.9167),
-            new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(30)));
+//    public static Transform3d robotToAlignmentCamera =
+//            new Transform3d(
+//                    Units.inchesToMeters(5), // +Forwards/ -Backwards  3.5
+//                    Units.inchesToMeters(12), // +Right / -Left  11.5
+//                    Units.inchesToMeters(31.25), // +Up / -Down
+//                    new Rotation3d(
+//                            Units.degreesToRadians(-37.5), // 45
+//                            Units.degreesToRadians(180),
+//                            Units.degreesToRadians(-90)) // -90
+//
+//            );
+
+    public static Transform3d robotToAlignmentCamera =
+            new Transform3d(
+                    Units.inchesToMeters(3.5), // +Forwards/ -Backwards  3.5
+                    Units.inchesToMeters(-14), // +Right / -Left  11.5
+                    Units.inchesToMeters(12), // +Up / -Down
+                    new Rotation3d(
+                            Units.degreesToRadians(0),
+                            Units.degreesToRadians(0),
+                            Units.degreesToRadians(-90))
+
+            );
+
+//    public static Transform3d robotToFrontCamera =
+//            new Transform3d(
+//                    Units.inchesToMeters(0), // +Forwards/ -Backwards  3.5
+//                    Units.inchesToMeters(0), // +Right / -Left  11.5
+//                    Units.inchesToMeters(0), // +Up / -Down
+//                    new Rotation3d(
+//                            Units.degreesToRadians(0), // 45
+//                            Units.degreesToRadians(0),
+//                            Units.degreesToRadians(0)) // -90
+//
+//            );
 
     // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;
@@ -70,8 +96,10 @@ public class VisionConstants {
     public static double[] cameraStdDevFactors =
         new double[] {
                 1.0, // Camera 0
-                1.0 // Camera 1
         };
 
-    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);
+//    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);
+        public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+
+    public static List<Integer> rejectedTags = List.of();
 }

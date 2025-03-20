@@ -117,23 +117,23 @@ public class Constants {
         public static boolean MOTOR_1_INVERTED = false;
         public static boolean MOTOR_2_INVERTED = true;
 
-        public static int CURRENT_LIMIT_STALLED = 10;
-        public static int CURRENT_LIMIT_FREE = 15;
+        public static int CURRENT_LIMIT_STALLED = 20;
+        public static int CURRENT_LIMIT_FREE = 20;
 
         public static double INTAKE_IN_SPEED = 1;
         public static double INTAKE_OUT_SPEED = -1;
 
-        public static double RAISED_SETPOINT = 30;
-        public static double LOWERED_SETPOINT = 0;
+        public static double RAISED_SETPOINT = 2.5;
+        public static double LOWERED_SETPOINT = 8;
 
         public static final double KP = 0.05;
         public static final double KI = 0;
         public static final double KD = 0;
 
         public static class Ports {
-            public static final int INTAKE_MOTOR_1 = 0;
-            public static final int INTAKE_MOTOR_2 = 0;
-            public static final int ROTATION_MOTOR = 0;
+            public static final int ROTATION_MOTOR = 10;
+            public static final int DELIVERY_MOTOR_ID = 5;
+
         }
     }
 
@@ -144,7 +144,6 @@ public class Constants {
         public static final double DELIVERY_IN_SPEED = 1;
 
         public static class Ports {
-            public static final int DELIVERY_MOTOR_ID = 5;
             public static final int CONVEYOR_MOTOR_ID = 6;
         }
 
@@ -166,11 +165,11 @@ public class Constants {
         }
     }
 
-    public static final class VisionSubsystem {
-        public static final String LIGNMMENT_CAMERA_NAME_CLOSE = "ALIGNMMENT_CAMERA_CLOSE";
-        public static final Transform3d CAMERA_TO_ROBOT_TRANSFORM =
-            new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
-    }
+//    public static final class VisionSubsystem {
+//        public static final String ALIGNMENT_CAMERA_NAME_CLOSE = "ALIGNMENT_CAMERA_CLOSE";
+//        public static final Transform3d CAMERA_TO_ROBOT_TRANSFORM =
+//            new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+//    }
 
 
     public static double loopPeriodSecs = 0.02;
