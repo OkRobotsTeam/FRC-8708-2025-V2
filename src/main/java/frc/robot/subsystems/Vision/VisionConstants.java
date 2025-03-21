@@ -60,7 +60,7 @@ public class VisionConstants {
 
     public static Transform3d robotToAlignmentCamera =
             new Transform3d(
-                    Units.inchesToMeters(3.5), // +Forwards/ -Backwards  3.5
+                    Units.inchesToMeters(3), // +Forwards/ -Backwards  3.5
                     Units.inchesToMeters(-14), // +Right / -Left  11.5
                     Units.inchesToMeters(12), // +Up / -Down
                     new Rotation3d(
@@ -95,7 +95,8 @@ public class VisionConstants {
     // (Adjust to trust some cameras more than others)
     public static double[] cameraStdDevFactors =
         new double[] {
-                1.0, // Camera 0
+                1.0,
+                1.0,
         };
 
 //    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);

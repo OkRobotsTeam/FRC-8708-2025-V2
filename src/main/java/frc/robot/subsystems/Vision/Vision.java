@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.LinkedList;
 import java.util.List;
 
-import frc.robot.Debug;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -118,36 +117,38 @@ public class Vision extends SubsystemBase {
 
             // Loop over pose observations
             for (var observation : inputs[cameraIndex].poseObservations) {
-                // Check whether to reject pose
-                boolean rejectPose =
-                        observation.tagCount() == 0 // Must have at least one tag
-                                || (observation.tagCount() == 1
-                                && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
-                                || Math.abs(observation.pose().getZ()) > maxZError // Must have realistic Z
-                                // coordinate
+                if (observation.tagCount() == 0) {
+                    continue;
+                }
+                boolean rejectPose = false;
+                String rejectionReason = "";
 
-                                // Must be within the field boundaries
-                                || observation.pose().getX() < 0.0
-                                || observation.pose().getX() > aprilTagLayout.getFieldLength()
-                                || observation.pose().getY() < 0.0
-                                || observation.pose().getY() > aprilTagLayout.getFieldWidth();
-                // || observation.averageTagDistance() > Units.feetToMeters(12); // TESTTTTT
+                if (observation.tagCount() == 1 && observation.ambiguity() > maxAmbiguity) {
+                    rejectPose = true;
+                    rejectionReason = "Single tag has high ambiguity (greater than " + maxAmbiguity + ").";
+                } else if (Math.abs(observation.pose().getZ()) > maxZError) {
+                    rejectPose = true;
+                    rejectionReason = "Z position out of bounds (|Z| > " + maxZError + ").";
+                } else if (observation.pose().getX() < 0.0 || observation.pose().getX() > aprilTagLayout.getFieldLength()) {
+                    rejectPose = true;
+                    rejectionReason = "X position outside field boundaries (0 to " + aprilTagLayout.getFieldLength() + ").";
+                } else if (observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
+                    rejectPose = true;
+                    rejectionReason = "Y position outside field boundaries (0 to " + aprilTagLayout.getFieldWidth() + ").";
+                }
 
                 // Add pose to log
                 robotPoses.add(observation.pose());
-//                if (rejectPose) {
-//                    System.out.println("Rejected vision observation: " + observation.pose());
-//                    robotPosesRejected.add(observation.pose());
-//                } else {
-//                    System.out.println("Accepted vision observation: " + observation.pose());
-                robotPosesAccepted.add(observation.pose());
-//                }
+                if (rejectPose) {
+                    System.out.println("Rejected vision observation: " + rejectionReason);
+                    robotPosesRejected.add(observation.pose());
+                }
 
                 // Skip if rejected
-//                if (rejectPose) {
-//                    System.out.println("Rejected pose " + observation.pose());
-//                    continue;
-//                }
+                if (rejectPose) {
+                    System.out.println("Rejected pose " + observation.pose());
+                    continue;
+                }
 
                 // Calculate standard deviations
                 double stdDevFactor =
@@ -157,7 +158,7 @@ public class Vision extends SubsystemBase {
                 if (cameraIndex < cameraStdDevFactors.length) {
                     linearStdDev *= cameraStdDevFactors[cameraIndex];
                     angularStdDev *= cameraStdDevFactors[cameraIndex];
-//                }
+                }
 
 //                    Debug.dprintln("vision", "X: ", observation.pose().getTranslation().getX(), " Y: ", observation.pose().getTranslation().getY(), " Z: ", observation.pose().getTranslation().getX(),
 //                            " Roll: ", observation.pose().getRotation().getX() * (180 / Math.PI), " Pitch: ", observation.pose().getRotation().getY() * (180 / Math.PI), " Yaw: ", observation.pose().getRotation().getZ() * (180 / Math.PI));
@@ -199,7 +200,6 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(
                     "Vision/Summary/RobotPosesRejected",
                     allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
-        }
     }
 
     @FunctionalInterface

@@ -28,10 +28,7 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -407,10 +404,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         };
     }
 
-    public Pose2d getTranslationToNearestTag() {
+    public Pose2d getPoseOfNearestTag() {
         Pose2d currentPose = getPose();
         List<AprilTag> aprilTags = VisionConstants.aprilTagLayout.getTags();
-        AprilTag closest = null;
+        AprilTag closest = aprilTags.get(0);
         double bestDistance = Double.POSITIVE_INFINITY;
 
         for (AprilTag tag: aprilTags) {
@@ -426,14 +423,10 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
             }
         }
 
-        if (closest != null) {
-            Pose2d relativePose = closest.pose.toPose2d().relativeTo(currentPose);
-            System.out.println("Closest reef tag ID: " + closest.ID);
-            System.out.println("Closest reef tag relative Pose: " + relativePose);
-            return relativePose;
-        }
-
-        return new Pose2d();
+        Pose2d nearestTagPose = closest.pose.toPose2d();
+        System.out.println("Closest reef tag ID: " + closest.ID);
+        System.out.println("Closest reef tag pose: " + nearestTagPose);
+        return nearestTagPose;
     }
 
     public void setSpeed(double speed) {

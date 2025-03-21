@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -113,14 +114,20 @@ public class RobotContainer {
 
     public void teleopInit() {
         delivery.setDefaultCommand(Commands.run(()-> {
-            delivery.setDeliveryMotor(
-                    (manipulatorController.getHID().getRightTriggerAxis() / 2.0)
-            );
+            if(Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.1 ) {
+                delivery.setDeliveryMotor(
+                        (-manipulatorController.getHID().getRightTriggerAxis() / 4.0)
+                );
+            }
         }, delivery));
     }
 
     public void teleopPeriodic() {
-        double manualAdjustAmount = manipulatorController.getLeftY();
+        if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
+            pickup.manualAdjust(-manipulatorController.getHID().getRightY() * 0.02);
+        }
+
+        double manualAdjustAmount = manipulatorController.getHID().getLeftY();
         if (abs(manualAdjustAmount) < 0.2) {
             manualAdjustAmount = 0;
         }
@@ -140,6 +147,7 @@ public class RobotContainer {
 
     private Command joystickDrive() {
         return DriveCommands.joystickDrive(
+                driveController,
                 swerveDrivetrain,
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
@@ -167,31 +175,14 @@ public class RobotContainer {
         manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
         manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
 
-        driveController.leftBumper().whileTrue(
-                joystickApproach(swerveDrivetrain::getTranslationToNearestTag)
-        );
-
         manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
         manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
         manipulatorController.leftBumper().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
         manipulatorController.leftBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
 
-//        manipulatorController.leftTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_IN_SPEED)));
-//        manipulatorController.leftTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
-
-
-
-//        Command printTriggerCommand = Commands.runOnce(() -> Debug.println("LT: ", manipulatorController.getHID().getLeftTriggerAxis()-0.5));
-//
-//        manipulatorController.leftTrigger().whileTrue(new RepeatCommand(printTriggerCommand));
-//
-//        manipulatorController.rightTrigger().whileTrue(Commands.run( ()-> {
-//            Debug.println("Trigger: ", manipulatorController.getHID().getRightTriggerAxis());
-//            delivery.setDeliveryMotor(
-//                    (manipulatorController.getHID().getLeftTriggerAxis()-0.5)
-//            );
-//        }));
+        manipulatorController.leftTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_IN_SPEED)));
+        manipulatorController.leftTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
 
         manipulatorController.rightTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
 

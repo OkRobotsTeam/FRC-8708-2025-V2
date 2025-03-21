@@ -14,6 +14,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,12 +24,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -38,6 +42,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Debug;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
@@ -86,49 +91,113 @@ public class DriveCommands {
      * Field relative drive command using two joysticks (controlling linear and angular velocities).
      */
     public static Command joystickDrive(
-        Drive drive,
-        DoubleSupplier xSupplier,
-        DoubleSupplier ySupplier,
-        DoubleSupplier omegaSupplier,
-        DoubleSupplier leftTrigger)
+            CommandXboxController controller,
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            DoubleSupplier omegaSupplier,
+            DoubleSupplier leftTrigger)
     {
         return Commands.run(
-            () -> {
-                currentDriveMode = DriveMode.dmJoystick;
-                // Get linear velocity
-                Translation2d linearVelocity =
-                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                        ySupplier.getAsDouble());
+                () -> {
+                    if (controller.leftBumper().getAsBoolean() || controller.rightBumper().getAsBoolean()) {
+                        Pose2d poseOfNearestReefTag = drive.getPoseOfNearestTag();
+                        if (poseOfNearestReefTag != null) {
+                            // Get relative pose in AprilTag frame
+                            Pose2d robotInTagFrame = drive.getPose().relativeTo(poseOfNearestReefTag);
+                            // Joystick inputs as a 2D vector (field-relative from driver's POV)
+                            double joyX = xSupplier.getAsDouble();
+                            double joyY = ySupplier.getAsDouble();
+                            Translation2d joystickVector = new Translation2d(joyX, joyY);
+                            System.out.println("Raw Joystick Input: X = " + joyX + ", Y = " + joyY);
 
-                //linearVelocity = linearVelocity.times(1 - leftTrigger.getAsDouble());
-                linearVelocity = linearVelocity.times(drive.getSpeed());
+                            // Get the perpendicular direction to the AprilTag’s rotation (tag-relative Y axis in field frame)
+                            Rotation2d tagRotation = poseOfNearestReefTag.getRotation();
+                            Translation2d tagPerpendicular = new Translation2d(
+                                    -tagRotation.getSin(),
+                                    tagRotation.getCos()
+                            ); // Field-relative perpendicular vector
 
-                // Apply rotation deadband
-                double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+                            System.out.println("Tag Perpendicular (field-relative): X = " + tagPerpendicular.getX() + ", Y = " + tagPerpendicular.getY());
+                            System.out.println("Robot to tag pose: X = " + robotInTagFrame.getX() + ", Y = " + robotInTagFrame.getY());
 
-                // Square rotation value for more precise control
-                omega = Math.copySign(omega * omega, omega);
+                            // Project joystick vector onto the perpendicular direction
+                            double lateralSpeedComponent = joystickVector.rotateBy(tagRotation).getY(); // -xSupplier.getAsDouble()
+                            System.out.println("Projected joystick component onto perpendicular: " + lateralSpeedComponent);
 
-                omega = omega *drive.getSpeed();
+                            // Scale lateral speed
+                            double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
+                            System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
 
-                // Convert to field relative speeds & send command
-                ChassisSpeeds speeds =
-                    new ChassisSpeeds(
-                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                        omega * drive.getMaxAngularSpeedRadPerSec());
-                boolean isFlipped =
-                    DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get() == Alliance.Red;
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        speeds,
-                        isFlipped
-                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                            : drive.getRotation()));
-            },
-            drive);
+                            // Proportional controller for X (distance to tag forward/back)
+                            double kP = 3; // Tune this gain as needed
+                            double forwardVelocity;
+                            if (controller.rightBumper().getAsBoolean()) {
+                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(17));
+                            } else {
+                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(4));
+                            }
+
+                            forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(), drive.getMaxLinearSpeedMetersPerSec());
+                            System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
+
+                            double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
+                            omega = MathUtil.clamp(omega, -0.3, 0.3);
+                            omega = omega * drive.getMaxAngularSpeedRadPerSec();
+                            System.out.println("Omega (rotational speed): " + omega + " rad/s");
+
+                            // Create velocity vector in tag-relative frame
+                            Translation2d tagRelativeVel = new Translation2d(lateralVelocity, forwardVelocity);
+
+                            // Convert to field-relative velocity
+                            Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
+                            System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
+
+                            // Send to drive
+                            drive.runVelocity(
+                                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                                            fieldRelativeVel.getX(),
+                                            fieldRelativeVel.getY(),
+                                            omega,
+                                            drive.getRotation()
+                                    )
+                            );
+                            return; // Skip default joystick mode when holding bumper
+                        }
+                    }
+
+                    // Default dmJoystick mode
+                    currentDriveMode = DriveMode.dmJoystick;
+                    Translation2d linearVelocity =
+                            getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                                    ySupplier.getAsDouble());
+
+                    linearVelocity = linearVelocity.times(drive.getSpeed());
+
+                    double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+                    omega = Math.copySign(omega * omega, omega);
+                    omega = omega * drive.getSpeed();
+
+                    ChassisSpeeds speeds =
+                            new ChassisSpeeds(
+                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                                    omega * drive.getMaxAngularSpeedRadPerSec());
+
+                    boolean isFlipped =
+                            DriverStation.getAlliance().isPresent()
+                                    && DriverStation.getAlliance().get() == Alliance.Red;
+
+                    drive.runVelocity(
+                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    speeds,
+                                    isFlipped
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()));
+                },
+                drive);
     }
+
 
     /**
      * Field relative drive command using joystick for linear control and PID for angular control.

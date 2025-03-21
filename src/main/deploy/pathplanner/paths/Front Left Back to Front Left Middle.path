@@ -3,57 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.825,
-        "y": 4.02
+        "x": 5.65,
+        "y": 5.53
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.961500000000001,
-        "y": 4.419874999999999
+        "x": 5.513624999999999,
+        "y": 5.273
       },
       "isLocked": false,
-      "linkedName": "FrontRight"
+      "linkedName": "FrontLeftBack"
     },
     {
       "anchor": {
-        "x": 5.825,
-        "y": 5.519725290341541
+        "x": 5.29,
+        "y": 5.13
       },
       "prevControl": {
-        "x": 6.0269292265925385,
-        "y": 5.372332660106031
-      },
-      "nextControl": {
-        "x": 5.623070773407466,
-        "y": 5.6671179205770486
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.37,
-        "y": 5.08
-      },
-      "prevControl": {
-        "x": 5.527095248046475,
-        "y": 5.274476433125499
+        "x": 5.5165,
+        "y": 5.557
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "FrontLeftMiddle"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.1,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 1.6,
-      "rotationDegrees": 150.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -72,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -87,7 +62,7 @@
   "folder": "Center Start 1 Coral 2 Algae",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 150.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
