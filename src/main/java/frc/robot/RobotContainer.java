@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -114,7 +115,7 @@ public class RobotContainer {
 
     public void teleopInit() {
         delivery.setDefaultCommand(Commands.run(()-> {
-            if(Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.1 ) {
+            if(Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.55 ) {
                 delivery.setDeliveryMotor(
                         (-manipulatorController.getHID().getRightTriggerAxis() / 4.0)
                 );
@@ -123,8 +124,8 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        if (Math.abs(manipulatorController.getHID().getRightX()) > 0.2) {
-            pickup.manualAdjust(-manipulatorController.getHID().getRightX() * 0.02);
+        if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
+            pickup.manualAdjust(-manipulatorController.getHID().getRightY() * 0.08);
         }
 
         double manualAdjustAmount = manipulatorController.getHID().getLeftY();
@@ -153,7 +154,8 @@ public class RobotContainer {
                 () -> -driveController.getLeftX(),
                 () -> -driveController.getRightX(),
                 () -> -driveController.getLeftTriggerAxis(),
-                () -> elevator.getElevatorPosition()
+                () -> elevator.getElevatorPosition(),
+                driveController.x()
         );
     }
 
@@ -172,6 +174,18 @@ public class RobotContainer {
         swerveDrivetrain.setDefaultCommand(joystickDrive());
         driveController.a().onTrue(
                 Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
+
+        // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
+        driveController.rightBumper()
+                .whileTrue(
+                        joystickApproach(
+                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.RIGHT)));
+
+        // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
+        driveController.leftBumper()
+                .whileTrue(
+                        joystickApproach(
+                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.LEFT)));
 //
         manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
         manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
@@ -198,7 +212,13 @@ public class RobotContainer {
         manipulatorController.x().onTrue(Commands.runOnce(pickup::runIntakeIn));
         manipulatorController.x().onFalse(Commands.runOnce(pickup::stopIntake));
 
-        manipulatorController.rightTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_OUT_SPEED)).andThen(() -> System.out.println("POSITION: " + swerveDrivetrain.getPose() + " ELEVATOR STATE: " + elevator.getElevatorPosition())));
+
+        driveController.rightTrigger().onTrue(Commands.runOnce(
+                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
+                        Commands.waitSeconds(0.5).andThen(
+                                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                        )
+        ));
 
     }
 
@@ -212,7 +232,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("raiseElevatorTo2", new InstantCommand(() -> elevator.transitionToState(2)));
         NamedCommands.registerCommand("raiseElevatorTo1", new InstantCommand(() -> elevator.transitionToState(1)));
         NamedCommands.registerCommand("lowerElevator", new InstantCommand(() -> elevator.transitionToState(0)));
-        NamedCommands.registerCommand("deliver", new InstantCommand(() -> delivery.setDeliveryMotor(-0.4)));
+        NamedCommands.registerCommand("deliver", new InstantCommand(() -> delivery.setDeliveryMotor(-0.2)));
         NamedCommands.registerCommand("stopDelivery", new InstantCommand(() -> delivery.setDeliveryMotor(0)));
         NamedCommands.registerCommand("algaeOut", new InstantCommand(pickup::lowerPickup));
         NamedCommands.registerCommand("algaeIn", new InstantCommand(pickup::raisePickup));

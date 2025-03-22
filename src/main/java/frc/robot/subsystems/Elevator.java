@@ -84,7 +84,11 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setMotors(double power) {
-        power = MathUtil.clamp(power, 0, 1);
+        if (getElevatorPosition() > 12.0) {
+            power = MathUtil.clamp(power, -0.15, 1);
+        } else {
+            power = MathUtil.clamp(power, 0, 1);
+        }
         motor1.set(power);
         motor2.set(power);
     }
@@ -113,7 +117,7 @@ public class Elevator extends SubsystemBase {
 
     public Command waitForElevator() {
         return Commands.waitUntil( ()-> {
-            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+//            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
             return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 5.0;
         });
     }
@@ -122,7 +126,7 @@ public class Elevator extends SubsystemBase {
 
     public Command waitForElevatorPrecise() {
         return Commands.waitUntil( ()-> {
-            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+//            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
             return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 1.0;
         });
     }

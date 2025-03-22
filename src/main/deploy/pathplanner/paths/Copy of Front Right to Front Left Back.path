@@ -3,32 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.65,
-        "y": 5.53
+        "x": 5.825,
+        "y": 4.06
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.513624999999999,
-        "y": 5.273
+        "x": 6.961500000000001,
+        "y": 4.333624999999999
       },
       "isLocked": false,
-      "linkedName": "FrontLeftBack"
+      "linkedName": "FrontRight"
     },
     {
       "anchor": {
-        "x": 5.389949632945814,
-        "y": 5.073149234370181
+        "x": 5.65,
+        "y": 5.53
       },
       "prevControl": {
-        "x": 5.616449632945813,
-        "y": 5.500149234370181
+        "x": 5.9675,
+        "y": 5.385375
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FrontLeftMiddle"
+      "linkedName": "FrontLeftBack"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 0.8,
+      "rotationDegrees": 150.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
@@ -59,10 +68,10 @@
     "rotation": 150.0
   },
   "reversed": false,
-  "folder": "Center Start 1 Coral 2 Algae",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 150.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": false
 }

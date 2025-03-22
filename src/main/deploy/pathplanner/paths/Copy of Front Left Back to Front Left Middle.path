@@ -59,7 +59,7 @@
     "rotation": 150.0
   },
   "reversed": false,
-  "folder": "Center Start 1 Coral 2 Algae",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 150.0

@@ -140,13 +140,13 @@ public class Vision extends SubsystemBase {
                 // Add pose to log
                 robotPoses.add(observation.pose());
                 if (rejectPose) {
-                    System.out.println("Rejected vision observation: " + rejectionReason);
+//                    System.out.println("Rejected vision observation: " + rejectionReason);
                     robotPosesRejected.add(observation.pose());
                 }
 
                 // Skip if rejected
                 if (rejectPose) {
-                    System.out.println("Rejected pose " + observation.pose());
+//                    System.out.println("Rejected pose " + observation.pose());
                     continue;
                 }
 

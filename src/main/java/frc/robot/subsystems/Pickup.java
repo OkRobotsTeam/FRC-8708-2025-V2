@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -32,6 +33,7 @@ public class Pickup extends SubsystemBase {
     
     public Pickup() {
         rotationPID.reset();
+        rotationMotor.setNeutralMode(NeutralModeValue.Brake);
 //        SparkMaxConfig pickupMotor1Config = new SparkMaxConfig();
 //        pickupMotor1Config.inverted(MOTOR_1_INVERTED);
 //        pickupMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
@@ -69,7 +71,7 @@ public class Pickup extends SubsystemBase {
     }
 
     public void manualAdjust(double manualAdjustAmount) {
-        rotationPID.setSetpoint(rotationMotor.getPosition().getValueAsDouble() + manualAdjustAmount);
+        rotationPID.setSetpoint(rotationPID.getSetpoint() + manualAdjustAmount);
     }
 
     public BooleanSupplier isNotExtended() {
