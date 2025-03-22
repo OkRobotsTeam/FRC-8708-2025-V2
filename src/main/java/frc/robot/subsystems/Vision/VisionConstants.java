@@ -103,4 +103,7 @@ public class VisionConstants {
         public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
 
     public static List<Integer> rejectedTags = List.of();
+
+    public static double LEFT_ALIGNMENT_OFFSET_INCHES = 0;
+    public static double RIGHT_ALIGNMENT_OFFSET_INCHES = 17;
 }

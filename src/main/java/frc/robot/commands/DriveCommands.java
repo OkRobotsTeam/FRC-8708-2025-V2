@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.Vision.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
 import java.text.DecimalFormat;
@@ -96,7 +97,8 @@ public class DriveCommands {
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
             DoubleSupplier omegaSupplier,
-            DoubleSupplier leftTrigger)
+            DoubleSupplier leftTrigger,
+            DoubleSupplier elevatorHeightInches)
     {
         return Commands.run(
                 () -> {
@@ -129,19 +131,25 @@ public class DriveCommands {
                             double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
                             System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
 
+                            double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
+
                             // Proportional controller for X (distance to tag forward/back)
                             double kP = 3; // Tune this gain as needed
                             double forwardVelocity;
-                            if (controller.rightBumper().getAsBoolean()) {
-                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(17));
+                            if (controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean()) {
+                                forwardVelocity = kP * (-robotInTagFrame.getY() + (Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES + VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES) / 2));
+                                omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(-90))).getRotations() * 2;
+                            } else if (controller.rightBumper().getAsBoolean()) {
+                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES));
                             } else {
-                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(4));
+
+                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES)); //
                             }
 
                             forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(), drive.getMaxLinearSpeedMetersPerSec());
                             System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
 
-                            double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
+
                             omega = MathUtil.clamp(omega, -0.3, 0.3);
                             omega = omega * drive.getMaxAngularSpeedRadPerSec();
                             System.out.println("Omega (rotational speed): " + omega + " rad/s");
@@ -153,12 +161,14 @@ public class DriveCommands {
                             Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
                             System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
 
+                            double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+
                             // Send to drive
                             drive.runVelocity(
                                     ChassisSpeeds.fromFieldRelativeSpeeds(
-                                            fieldRelativeVel.getX(),
-                                            fieldRelativeVel.getY(),
-                                            omega,
+                                            fieldRelativeVel.getX() * slowdownDueToElevator,
+                                            fieldRelativeVel.getY() * slowdownDueToElevator,
+                                            omega * slowdownDueToElevator,
                                             drive.getRotation()
                                     )
                             );
@@ -174,19 +184,22 @@ public class DriveCommands {
 
                     linearVelocity = linearVelocity.times(drive.getSpeed());
 
+                    double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
                     omega = Math.copySign(omega * omega, omega);
                     omega = omega * drive.getSpeed();
 
                     ChassisSpeeds speeds =
                             new ChassisSpeeds(
-                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    omega * drive.getMaxAngularSpeedRadPerSec());
+                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
+                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
+                                    omega * drive.getMaxAngularSpeedRadPerSec() * slowdownDueToElevator);
 
                     boolean isFlipped =
                             DriverStation.getAlliance().isPresent()
                                     && DriverStation.getAlliance().get() == Alliance.Red;
+
 
                     drive.runVelocity(
                             ChassisSpeeds.fromFieldRelativeSpeeds(

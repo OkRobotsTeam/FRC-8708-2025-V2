@@ -123,8 +123,8 @@ public class RobotContainer {
     }
 
     public void teleopPeriodic() {
-        if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
-            pickup.manualAdjust(-manipulatorController.getHID().getRightY() * 0.02);
+        if (Math.abs(manipulatorController.getHID().getRightX()) > 0.2) {
+            pickup.manualAdjust(-manipulatorController.getHID().getRightX() * 0.02);
         }
 
         double manualAdjustAmount = manipulatorController.getHID().getLeftY();
@@ -152,7 +152,8 @@ public class RobotContainer {
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
                 () -> -driveController.getRightX(),
-                () -> -driveController.getLeftTriggerAxis()
+                () -> -driveController.getLeftTriggerAxis(),
+                () -> elevator.getElevatorPosition()
         );
     }
 
