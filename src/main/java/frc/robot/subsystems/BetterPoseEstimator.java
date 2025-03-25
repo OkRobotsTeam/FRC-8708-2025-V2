@@ -82,7 +82,7 @@ public class BetterPoseEstimator extends SubsystemBase {
     }
 
     public double calculateSpeedDelta(Pose2d visionPose, OdometryHistoryEntry thisOdometry,
-            VisionHistoryEntry lastVision) {
+                                      VisionHistoryEntry lastVision) {
         double visionMovement = distanceBetween(visionPose, lastVision.pose);
         double visionRotation = Math.abs(visionPose.getRotation().minus(lastVision.pose.getRotation()).getRadians());
         double visionCombined = (visionMovement + visionRotation * 5) * 100;
@@ -117,7 +117,7 @@ public class BetterPoseEstimator extends SubsystemBase {
 
     public Pose2d getCurrentPose() {
         OdometryHistoryEntry currentOdometry = odometryHistory.get(0);
-        Transform2d movement = currentOdometry.pose.minus(anchorOdometry);     
+        Transform2d movement = currentOdometry.pose.minus(anchorOdometry);
         Pose2d newPosition = anchorVision.transformBy(movement);
         //Debug.debugPrint("posemath",  " A:" + anchorVision.toString() + " MV:" + movement.toString() + " NP:" + newPosition.toString() );
         return (newPosition);
@@ -133,11 +133,11 @@ public class BetterPoseEstimator extends SubsystemBase {
         if (ally.isPresent()) {
             if (ally.get() == DriverStation.Alliance.Red) {
                 targetPosition = new Translation2d(16.788 - (Units.inchesToMeters(26)),
-                        6.013 - (Units.inchesToMeters(20)));
+                                                   6.013 - (Units.inchesToMeters(20)));
             }
             if (ally.get() == DriverStation.Alliance.Blue) {
                 targetPosition = new Translation2d(1.169 - (Units.inchesToMeters(26)),
-                        6.013 - (Units.inchesToMeters(20)));
+                                                   6.013 - (Units.inchesToMeters(20)));
             }
         } else {
             System.out.println("Warning: No alliance Selected, please select alliance");

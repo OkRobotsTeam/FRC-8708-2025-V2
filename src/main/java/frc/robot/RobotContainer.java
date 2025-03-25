@@ -64,12 +64,12 @@ public class RobotContainer {
      */
     public RobotContainer() {
         swerveDrivetrain =
-                new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFX(TunerConstants.FrontRight),
-                        new ModuleIOTalonFX(TunerConstants.BackLeft),
-                        new ModuleIOTalonFX(TunerConstants.BackRight));
+            new Drive(
+            new GyroIOPigeon2(),
+            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+            new ModuleIOTalonFX(TunerConstants.FrontRight),
+            new ModuleIOTalonFX(TunerConstants.BackLeft),
+            new ModuleIOTalonFX(TunerConstants.BackRight));
 
 
         vision = new Vision(swerveDrivetrain, new VisionIOPhotonVision(alignmentCameraName, robotToAlignmentCamera));
@@ -79,24 +79,24 @@ public class RobotContainer {
 
         // Set up auto routines
         m_autoChooser =
-                new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+            new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
         m_autoChooser.addOption(
-                "Drive Wheel Radius Characterization",
-                DriveCommands.wheelRadiusCharacterization(swerveDrivetrain));
+            "Drive Wheel Radius Characterization",
+            DriveCommands.wheelRadiusCharacterization(swerveDrivetrain));
         m_autoChooser.addOption(
-                "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(swerveDrivetrain));
+            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(swerveDrivetrain));
         m_autoChooser.addOption(
-                "Drive SysId (Quasistatic Forward)",
-                swerveDrivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+            "Drive SysId (Quasistatic Forward)",
+            swerveDrivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         m_autoChooser.addOption(
-                "Drive SysId (Quasistatic Reverse)",
-                swerveDrivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+            "Drive SysId (Quasistatic Reverse)",
+            swerveDrivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
         m_autoChooser.addOption(
-                "Drive SysId (Dynamic Forward)", swerveDrivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+            "Drive SysId (Dynamic Forward)", swerveDrivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
         m_autoChooser.addOption(
-                "Drive SysId (Dynamic Reverse)", swerveDrivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+            "Drive SysId (Dynamic Reverse)", swerveDrivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
@@ -117,7 +117,7 @@ public class RobotContainer {
         delivery.setDefaultCommand(Commands.run(()-> {
             if(Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.55 ) {
                 delivery.setDeliveryMotor(
-                        (-manipulatorController.getHID().getRightTriggerAxis() / 4.0)
+                    (-manipulatorController.getHID().getRightTriggerAxis() / 4.0)
                 );
             }
         }, delivery));
@@ -137,7 +137,7 @@ public class RobotContainer {
         elevator.manualAdjust(manualAdjustAmount * 6);
     }
 
-    public void testInit(){
+    public void testInit() {
         teleopInit();
         swerveDrivetrain.setSpeed(0.1);
     }
@@ -148,22 +148,22 @@ public class RobotContainer {
 
     private Command joystickDrive() {
         return DriveCommands.joystickDrive(
-                driveController,
-                swerveDrivetrain,
-                () -> -driveController.getLeftY(),
-                () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX(),
-                () -> -driveController.getLeftTriggerAxis(),
-                () -> elevator.getElevatorPosition(),
-                driveController.x()
-        );
+                   driveController,
+                   swerveDrivetrain,
+                   () -> -driveController.getLeftY(),
+                   () -> -driveController.getLeftX(),
+                   () -> -driveController.getRightX(),
+                   () -> -driveController.getLeftTriggerAxis(),
+                   () -> elevator.getElevatorPosition(),
+                   driveController.x()
+               );
     }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose) {
         return DriveCommands.joystickApproach(
-                swerveDrivetrain,
-                () -> -driveController.getLeftY(),
-                approachPose);
+                   swerveDrivetrain,
+                   () -> -driveController.getLeftY(),
+                   approachPose);
     }
 
     /**
@@ -173,25 +173,27 @@ public class RobotContainer {
         // Default command, normal field-relative drive
         swerveDrivetrain.setDefaultCommand(joystickDrive());
         driveController.a().onTrue(
-                Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
+            Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
         driveController.rightBumper()
-                .whileTrue(
-                        joystickApproach(
-                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.RIGHT)));
+        .whileTrue(
+            joystickApproach(
+                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         driveController.leftBumper()
-                .whileTrue(
-                        joystickApproach(
-                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.LEFT)));
+        .whileTrue(
+            joystickApproach(
+                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.LEFT)));
 //
         manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
         manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
 
-        manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
-        manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+        manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(
+                    -1.0)));
+        manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(
+                    -1.0)));
         manipulatorController.leftBumper().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
         manipulatorController.leftBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
@@ -216,9 +218,9 @@ public class RobotContainer {
         driveController.rightTrigger().onTrue(Commands.runOnce(
                 () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
                         Commands.waitSeconds(0.5).andThen(
-                                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                            () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
                         )
-        ));
+                                              ));
 
     }
 

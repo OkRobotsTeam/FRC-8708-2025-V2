@@ -27,15 +27,13 @@ public class Phoenix6Util {
      * @param statusCode error code
      * @param message message to print if error happens
      */
-    public static void checkError(StatusCode statusCode, String message)
-    {
+    public static void checkError(StatusCode statusCode, String message) {
         if (statusCode != StatusCode.OK) {
             DriverStation.reportError(message + " " + statusCode, false);
         }
     }
 
-    public static boolean checkErrorAndRetry(Supplier<StatusCode> function, int numTries)
-    {
+    public static boolean checkErrorAndRetry(Supplier<StatusCode> function, int numTries) {
         StatusCode code = function.get();
         int tries = 0;
         while (code != StatusCode.OK && tries < numTries) {
@@ -46,9 +44,9 @@ public class Phoenix6Util {
         if (code != StatusCode.OK) {
             DriverStation.reportError(
                 "Failed to execute phoenix 6 api call after "
-                    + numTries
-                    + " attempts. "
-                    + code.getDescription(),
+                + numTries
+                + " attempts. "
+                + code.getDescription(),
                 false);
             return false;
         }
@@ -61,21 +59,18 @@ public class Phoenix6Util {
      * @param statusCode error code
      * @param message message to print if error happens
      */
-    public static void checkErrorWithThrow(StatusCode statusCode, String message)
-    {
+    public static void checkErrorWithThrow(StatusCode statusCode, String message) {
         if (statusCode != StatusCode.OK) {
             throw new RuntimeException(message + " " + statusCode);
         }
     }
 
-    public static boolean checkErrorAndRetry(Supplier<StatusCode> function)
-    {
+    public static boolean checkErrorAndRetry(Supplier<StatusCode> function) {
         return checkErrorAndRetry(function, 5);
     }
 
     public static boolean applyAndCheckConfiguration(
-        TalonFX talon, TalonFXConfiguration config, int numTries)
-    {
+        TalonFX talon, TalonFXConfiguration config, int numTries) {
         for (int i = 0; i < numTries; i++) {
             if (checkErrorAndRetry(() -> talon.getConfigurator().apply(config))) {
                 // API says we applied config, lets make sure it's right
@@ -84,23 +79,23 @@ public class Phoenix6Util {
                 } else {
                     DriverStation.reportWarning(
                         "Failed to verify config for talon ["
-                            + talon.getDescription()
-                            + "] (attempt "
-                            + (i + 1)
-                            + " of "
-                            + numTries
-                            + ")",
-                        false);
-                }
-            } else {
-                DriverStation.reportWarning(
-                    "Failed to apply config for talon ["
                         + talon.getDescription()
                         + "] (attempt "
                         + (i + 1)
                         + " of "
                         + numTries
                         + ")",
+                        false);
+                }
+            } else {
+                DriverStation.reportWarning(
+                    "Failed to apply config for talon ["
+                    + talon.getDescription()
+                    + "] (attempt "
+                    + (i + 1)
+                    + " of "
+                    + numTries
+                    + ")",
                     false);
             }
         }
@@ -109,8 +104,7 @@ public class Phoenix6Util {
         return false;
     }
 
-    public static boolean readAndVerifyConfiguration(TalonFX talon, TalonFXConfiguration config)
-    {
+    public static boolean readAndVerifyConfiguration(TalonFX talon, TalonFXConfiguration config) {
         TalonFXConfiguration readConfig = new TalonFXConfiguration();
         if (!checkErrorAndRetry(() -> talon.getConfigurator().refresh(readConfig))) {
             // could not get config!
@@ -129,8 +123,7 @@ public class Phoenix6Util {
         }
     }
 
-    public static boolean applyAndCheckConfiguration(TalonFX talon, TalonFXConfiguration config)
-    {
+    public static boolean applyAndCheckConfiguration(TalonFX talon, TalonFXConfiguration config) {
         boolean result = applyAndCheckConfiguration(talon, config, 5);
 
         configResult &= result;
@@ -163,8 +156,7 @@ public class Phoenix6Util {
         DeviceTemp,
     }
 
-    public static void checkFaults(String subsystemName, TalonFX talon)
-    {
+    public static void checkFaults(String subsystemName, TalonFX talon) {
         StringBuilder sb = new StringBuilder();
         EnumMap<Fault, Boolean> faults = new EnumMap<>(Fault.class);
         faults.put(Fault.Hardware, talon.getFault_Hardware().getValue());
@@ -174,13 +166,13 @@ public class Phoenix6Util {
         // faults.put(Fault.StatorCurrLimit, talon.getFault_StatorCurrLimit().getValue());
         // faults.put(Fault.SupplyCurrLimit, talon.getFault_SupplyCurrLimit().getValue());
         faults.put(Fault.UnlicensedFeatureInUse,
-            talon.getFault_UnlicensedFeatureInUse().getValue());
+                   talon.getFault_UnlicensedFeatureInUse().getValue());
         faults.put(Fault.BridgeBrownout, talon.getFault_BridgeBrownout().getValue());
         faults.put(Fault.RemoteSensorReset, talon.getFault_RemoteSensorReset().getValue());
         faults.put(Fault.RemoteSensorPosOverflow,
-            talon.getFault_RemoteSensorPosOverflow().getValue());
+                   talon.getFault_RemoteSensorPosOverflow().getValue());
         faults.put(Fault.RemoteSensorDataInvalid,
-            talon.getFault_RemoteSensorDataInvalid().getValue());
+                   talon.getFault_RemoteSensorDataInvalid().getValue());
         faults.put(Fault.FusedSensorOutOfSync, talon.getFault_FusedSensorOutOfSync().getValue());
         faults.put(
             Fault.UsingFusedCANcoderWhileUnlicensed,
@@ -219,32 +211,31 @@ public class Phoenix6Util {
         UnlicensedFeatureInUse
     }
 
-    public static void checkStickyFaults(String subsystemName, TalonFX talon)
-    {
+    public static void checkStickyFaults(String subsystemName, TalonFX talon) {
         StringBuilder sb = new StringBuilder();
         EnumMap<StickyFault, Boolean> faults = new EnumMap<>(StickyFault.class);
         faults.put(StickyFault.BootDuringEnable,
-            talon.getStickyFault_BootDuringEnable().getValue());
+                   talon.getStickyFault_BootDuringEnable().getValue());
         faults.put(StickyFault.BridgeBrownout, talon.getStickyFault_BridgeBrownout().getValue());
         faults.put(StickyFault.DeviceTemp, talon.getStickyFault_DeviceTemp().getValue());
         faults.put(StickyFault.ForwardHardLimit,
-            talon.getStickyFault_ForwardHardLimit().getValue());
+                   talon.getStickyFault_ForwardHardLimit().getValue());
         faults.put(StickyFault.ForwardSoftLimit,
-            talon.getStickyFault_ForwardSoftLimit().getValue());
+                   talon.getStickyFault_ForwardSoftLimit().getValue());
         faults.put(StickyFault.Hardware, talon.getStickyFault_Hardware().getValue());
         faults.put(StickyFault.OverSupplyV, talon.getStickyFault_OverSupplyV().getValue());
         faults.put(StickyFault.ProcTemp, talon.getStickyFault_ProcTemp().getValue());
         faults.put(StickyFault.ReverseHardLimit,
-            talon.getStickyFault_ReverseHardLimit().getValue());
+                   talon.getStickyFault_ReverseHardLimit().getValue());
         faults.put(StickyFault.ReverseSoftLimit,
-            talon.getStickyFault_ReverseSoftLimit().getValue());
+                   talon.getStickyFault_ReverseSoftLimit().getValue());
         faults.put(StickyFault.Undervoltage, talon.getStickyFault_Undervoltage().getValue());
         faults.put(StickyFault.UnstableSupplyV, talon.getStickyFault_UnstableSupplyV().getValue());
         faults.put(
             StickyFault.UnlicensedFeatureInUse,
             talon.getStickyFault_UnlicensedFeatureInUse().getValue());
         faults.put(StickyFault.RemoteSensorReset,
-            talon.getStickyFault_RemoteSensorReset().getValue());
+                   talon.getStickyFault_RemoteSensorReset().getValue());
 
         for (var fault : faults.entrySet()) {
             if (fault.getValue()) {

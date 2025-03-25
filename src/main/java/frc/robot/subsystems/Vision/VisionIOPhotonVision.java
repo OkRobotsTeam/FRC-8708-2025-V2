@@ -35,15 +35,13 @@ public class VisionIOPhotonVision implements VisionIO {
      * @param name The configured name of the camera.
      * @param rotationSupplier The 3D position of the camera relative to the robot.
      */
-    public VisionIOPhotonVision(String name, Transform3d robotToCamera)
-    {
+    public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
         camera = new PhotonCamera(name);
         this.robotToCamera = robotToCamera;
     }
 
     @Override
-    public void updateInputs(VisionIOInputs inputs)
-    {
+    public void updateInputs(VisionIOInputs inputs) {
         inputs.connected = camera.isConnected();
 
         // Read new camera observations
@@ -55,8 +53,8 @@ public class VisionIOPhotonVision implements VisionIO {
             if (result.hasTargets()) {
                 inputs.latestTargetObservation =
                     new TargetObservation(
-                        Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                        Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
+                    Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
+                    Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
             } else {
                 inputs.latestTargetObservation =
                     new TargetObservation(new Rotation2d(), new Rotation2d());
@@ -99,7 +97,7 @@ public class VisionIOPhotonVision implements VisionIO {
                 if (tagPose.isPresent()) {
                     Transform3d fieldToTarget =
                         new Transform3d(tagPose.get().getTranslation(),
-                            tagPose.get().getRotation());
+                                        tagPose.get().getRotation());
                     Transform3d cameraToTarget = target.bestCameraToTarget;
                     Transform3d fieldToCamera = fieldToTarget.plus(cameraToTarget.inverse());
                     Transform3d fieldToRobot = fieldToCamera.plus(robotToCamera.inverse());

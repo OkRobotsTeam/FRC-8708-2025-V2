@@ -48,14 +48,14 @@ public class FieldConstants {
     public static class CoralStation {
         public static final Pose2d leftCenterFace =
             new Pose2d(
-                Units.inchesToMeters(33.526),
-                Units.inchesToMeters(291.176),
-                Rotation2d.fromDegrees(90 - 144.011));
+            Units.inchesToMeters(33.526),
+            Units.inchesToMeters(291.176),
+            Rotation2d.fromDegrees(90 - 144.011));
         public static final Pose2d rightCenterFace =
             new Pose2d(
-                Units.inchesToMeters(33.526),
-                Units.inchesToMeters(25.824),
-                Rotation2d.fromDegrees(144.011 - 90));
+            Units.inchesToMeters(33.526),
+            Units.inchesToMeters(25.824),
+            Rotation2d.fromDegrees(144.011 - 90));
     }
 
     public static class Reef {
@@ -78,34 +78,34 @@ public class FieldConstants {
             // Initialize faces
             centerFaces[0] =
                 new Pose2d(
-                    Units.inchesToMeters(144.003),
-                    Units.inchesToMeters(158.500),
-                    Rotation2d.fromDegrees(180));
+                Units.inchesToMeters(144.003),
+                Units.inchesToMeters(158.500),
+                Rotation2d.fromDegrees(180));
             centerFaces[1] =
                 new Pose2d(
-                    Units.inchesToMeters(160.373),
-                    Units.inchesToMeters(186.857),
-                    Rotation2d.fromDegrees(120));
+                Units.inchesToMeters(160.373),
+                Units.inchesToMeters(186.857),
+                Rotation2d.fromDegrees(120));
             centerFaces[2] =
                 new Pose2d(
-                    Units.inchesToMeters(193.116),
-                    Units.inchesToMeters(186.858),
-                    Rotation2d.fromDegrees(60));
+                Units.inchesToMeters(193.116),
+                Units.inchesToMeters(186.858),
+                Rotation2d.fromDegrees(60));
             centerFaces[3] =
                 new Pose2d(
-                    Units.inchesToMeters(209.489),
-                    Units.inchesToMeters(158.502),
-                    Rotation2d.fromDegrees(0));
+                Units.inchesToMeters(209.489),
+                Units.inchesToMeters(158.502),
+                Rotation2d.fromDegrees(0));
             centerFaces[4] =
                 new Pose2d(
-                    Units.inchesToMeters(193.118),
-                    Units.inchesToMeters(130.145),
-                    Rotation2d.fromDegrees(-60));
+                Units.inchesToMeters(193.118),
+                Units.inchesToMeters(130.145),
+                Rotation2d.fromDegrees(-60));
             centerFaces[5] =
                 new Pose2d(
-                    Units.inchesToMeters(160.375),
-                    Units.inchesToMeters(130.144),
-                    Rotation2d.fromDegrees(-120));
+                Units.inchesToMeters(160.375),
+                Units.inchesToMeters(130.144),
+                Rotation2d.fromDegrees(-120));
 
             centerFaces[6] = centerFaces[0].rotateAround(fieldCenter, Rotation2d.k180deg);
             centerFaces[7] = centerFaces[1].rotateAround(fieldCenter, Rotation2d.k180deg);
@@ -126,25 +126,25 @@ public class FieldConstants {
                     } else {
                         poseDirection =
                             new Pose2d(centerOfReef.rotateAround(fieldCenter, Rotation2d.k180deg),
-                                centerFaces[face].getRotation());
+                                       centerFaces[face].getRotation());
                     }
 
                     double adjustX = Units.inchesToMeters(30.738); // Depth of branch from reef face
                     double adjustY = Units.inchesToMeters(6.469); // Offset from reef face
-                                                                  // centerline to branch
+                    // centerline to branch
 
                     fillRight.put(
                         level,
                         new Pose3d(
                             new Translation3d(
                                 poseDirection
-                                    .transformBy(
-                                        new Transform2d(adjustX, adjustY, new Rotation2d()))
-                                    .getX(),
+                                .transformBy(
+                                    new Transform2d(adjustX, adjustY, new Rotation2d()))
+                                .getX(),
                                 poseDirection
-                                    .transformBy(
-                                        new Transform2d(adjustX, adjustY, new Rotation2d()))
-                                    .getY(),
+                                .transformBy(
+                                    new Transform2d(adjustX, adjustY, new Rotation2d()))
+                                .getY(),
                                 level.height),
                             new Rotation3d(
                                 0,
@@ -155,13 +155,13 @@ public class FieldConstants {
                         new Pose3d(
                             new Translation3d(
                                 poseDirection
-                                    .transformBy(
-                                        new Transform2d(adjustX, -adjustY, new Rotation2d()))
-                                    .getX(),
+                                .transformBy(
+                                    new Transform2d(adjustX, -adjustY, new Rotation2d()))
+                                .getX(),
                                 poseDirection
-                                    .transformBy(
-                                        new Transform2d(adjustX, -adjustY, new Rotation2d()))
-                                    .getY(),
+                                .transformBy(
+                                    new Transform2d(adjustX, -adjustY, new Rotation2d()))
+                                .getY(),
                                 level.height),
                             new Rotation3d(
                                 0,
@@ -192,8 +192,7 @@ public class FieldConstants {
         L2(Units.inchesToMeters(31.875), -35),
         L1(Units.inchesToMeters(18), 0);
 
-        ReefHeight(double height, double pitch)
-        {
+        ReefHeight(double height, double pitch) {
             this.height = height;
             this.pitch = pitch; // in degrees
         }
@@ -202,8 +201,7 @@ public class FieldConstants {
         public final double pitch;
     }
 
-    public static Pose2d getNearestReefFace(Pose2d currentPose)
-    {
+    public static Pose2d getNearestReefFace(Pose2d currentPose) {
         return currentPose.nearest(List.of(FieldConstants.Reef.centerFaces));
     }
 
@@ -212,23 +210,21 @@ public class FieldConstants {
         RIGHT
     }
 
-    public static Pose2d getNearestReefBranch(Pose2d currentPose, ReefSide side)
-    {
+    public static Pose2d getNearestReefBranch(Pose2d currentPose, ReefSide side) {
         return FieldConstants.Reef.branchPositions
-            .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
-                * 2 + (side == ReefSide.LEFT ? 1 : 0))
-            .get(FieldConstants.ReefHeight.L1).toPose2d();
+               .get(List.of(FieldConstants.Reef.centerFaces).indexOf(getNearestReefFace(currentPose))
+                    * 2 + (side == ReefSide.LEFT ? 1 : 0))
+               .get(FieldConstants.ReefHeight.L1).toPose2d();
     }
 
-    public static Pose2d getNearestCoralStation(Pose2d currentPose)
-    {
+    public static Pose2d getNearestCoralStation(Pose2d currentPose) {
         if (currentPose.getTranslation().getX() > FieldConstants.fieldLength / 2) {
             if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {
                 return FieldConstants.CoralStation.rightCenterFace
-                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+                       .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
             } else {
                 return FieldConstants.CoralStation.leftCenterFace
-                    .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
+                       .rotateAround(FieldConstants.fieldCenter, Rotation2d.k180deg);
             }
         } else {
             if (currentPose.getTranslation().getY() > FieldConstants.fieldWidth / 2) {

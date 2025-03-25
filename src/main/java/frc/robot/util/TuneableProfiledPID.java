@@ -17,8 +17,7 @@ public class TuneableProfiledPID extends ProfiledPIDController {
     private LoggedTunableNumber m_kP, m_kI, m_kD, m_maxV, m_maxA;
 
     public TuneableProfiledPID(String name, double kP, double kI,
-        double kD, double maxV, double maxA)
-    {
+                               double kD, double maxV, double maxA) {
         super(kP, kI, kD, new TrapezoidProfile.Constraints(maxV, maxA));
 
         m_name = name;
@@ -33,17 +32,16 @@ public class TuneableProfiledPID extends ProfiledPIDController {
 
     }
 
-    public void updatePID()
-    {
+    public void updatePID() {
         // If changed, update controller constants from Tuneable Numbers
         if (m_kP.hasChanged(hashCode())
-            || m_kI.hasChanged(hashCode())
-            || m_kD.hasChanged(hashCode())) {
+                || m_kI.hasChanged(hashCode())
+                || m_kD.hasChanged(hashCode())) {
             this.setPID(m_kP.get(), m_kI.get(), m_kD.get());
         }
 
         if (m_maxV.hasChanged(hashCode())
-            || m_maxA.hasChanged(hashCode())) {
+                || m_maxA.hasChanged(hashCode())) {
             this.setConstraints(new TrapezoidProfile.Constraints(m_maxV.get(), m_maxA.get()));
         }
     }

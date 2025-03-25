@@ -28,9 +28,9 @@ public class Climber extends SubsystemBase {
 //        climberMotor.set(pidOutput);
     }
 
-        public void setSpeed(double speed) {
+    public void setSpeed(double speed) {
         climberMotor.set(speed);
-        }
+    }
 
 //    public void climb() {
 //        climberPID.setSetpoint(CLIMBING_SETPOINT);

@@ -49,31 +49,27 @@ public class PhoenixOdometryThread extends Thread {
         new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD();
     private static PhoenixOdometryThread instance = null;
 
-    public static PhoenixOdometryThread getInstance()
-    {
+    public static PhoenixOdometryThread getInstance() {
         if (instance == null) {
             instance = new PhoenixOdometryThread();
         }
         return instance;
     }
 
-    private PhoenixOdometryThread()
-    {
+    private PhoenixOdometryThread() {
         setName("PhoenixOdometryThread");
         setDaemon(true);
     }
 
     @Override
-    public void start()
-    {
+    public void start() {
         if (timestampQueues.size() > 0) {
             super.start();
         }
     }
 
     /** Registers a Phoenix signal to be read from the thread. */
-    public Queue<Double> registerSignal(StatusSignal<Angle> signal)
-    {
+    public Queue<Double> registerSignal(StatusSignal<Angle> signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
         signalsLock.lock();
         Drive.odometryLock.lock();
@@ -91,8 +87,7 @@ public class PhoenixOdometryThread extends Thread {
     }
 
     /** Registers a generic signal to be read from the thread. */
-    public Queue<Double> registerSignal(DoubleSupplier signal)
-    {
+    public Queue<Double> registerSignal(DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
         signalsLock.lock();
         Drive.odometryLock.lock();
@@ -107,8 +102,7 @@ public class PhoenixOdometryThread extends Thread {
     }
 
     /** Returns a new queue that returns timestamp values for each sample. */
-    public Queue<Double> makeTimestampQueue()
-    {
+    public Queue<Double> makeTimestampQueue() {
         Queue<Double> queue = new ArrayBlockingQueue<>(20);
         Drive.odometryLock.lock();
         try {
@@ -120,8 +114,7 @@ public class PhoenixOdometryThread extends Thread {
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         while (true) {
             // Wait for updates from all signals
             signalsLock.lock();
