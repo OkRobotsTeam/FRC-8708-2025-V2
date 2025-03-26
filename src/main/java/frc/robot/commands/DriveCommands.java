@@ -103,90 +103,7 @@ public class DriveCommands {
     {
         return Commands.run(
                 () -> {
-                    // if (controller.leftBumper().getAsBoolean() || controller.rightBumper().getAsBoolean()) {
-                    // Pose2d poseOfNearestReefTag = drive.getPoseOfNearestTag();
-                    // if (poseOfNearestReefTag != null) {
-                    // // Get relative pose in AprilTag frame
-                    // Pose2d robotInTagFrame = drive.getPose().relativeTo(poseOfNearestReefTag);
-                    // // Joystick inputs as a 2D vector (field-relative from driver's POV)
-                    // double joyX = xSupplier.getAsDouble();
-                    // double joyY = ySupplier.getAsDouble();
-                    // Translation2d joystickVector = new Translation2d(joyX, joyY);
-                    //// System.out.println("Raw Joystick Input: X = " + joyX + ", Y = " + joyY);
-                    //
-                    // // Get the perpendicular direction to the AprilTag’s rotation (tag-relative Y axis in field frame)
-                    // Rotation2d tagRotation = poseOfNearestReefTag.getRotation();
-                    // Translation2d tagPerpendicular = new Translation2d(
-                    // -tagRotation.getSin(),
-                    // tagRotation.getCos()
-                    // ); // Field-relative perpendicular vector
-                    //
-                    //// System.out.println("Tag Perpendicular (field-relative): X = " + tagPerpendicular.getX() + ", Y = " +
-                    // tagPerpendicular.getY());
-                    //// System.out.println("Robot to tag pose: X = " + robotInTagFrame.getX() + ", Y = " + robotInTagFrame.getY());
-                    //
-                    // // Project joystick vector onto the perpendicular direction
-                    // double lateralSpeedComponent = joystickVector.rotateBy(tagRotation).getY(); // -xSupplier.getAsDouble()
-                    //// System.out.println("Projected joystick component onto perpendicular: " + lateralSpeedComponent);
-                    //
-                    // // Scale lateral speed
-                    // double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
-                    //// System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
-                    //
-                    // double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
-                    //
-                    // // Proportional controller for X (distance to tag forward/back)
-                    // double kP = 3; // Tune this gain as needed
-                    // double forwardVelocity;
-                    // if (controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean()) {
-                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
-                    // (Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES +
-                    // VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES) / 2));
-                    // omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(-90))).getRotations() * 2;
-                    // } else if (controller.rightBumper().getAsBoolean()) {
-                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
-                    // Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES));
-                    // } else {
-                    //
-                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
-                    // Units.inchesToMeters(VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES)); //
-                    // }
-                    //
-                    // forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(),
-                    // drive.getMaxLinearSpeedMetersPerSec());
-                    //// System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
-                    //
-                    //
-                    // omega = MathUtil.clamp(omega, -0.3, 0.3);
-                    // omega = omega * drive.getMaxAngularSpeedRadPerSec();
-                    //// System.out.println("Omega (rotational speed): " + omega + " rad/s");
-                    //
-                    // // Create velocity vector in tag-relative frame
-                    // Translation2d tagRelativeVel = new Translation2d(lateralVelocity, forwardVelocity);
-                    //
-                    // // Convert to field-relative velocity
-                    // Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
-                    //// System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " +
-                    // fieldRelativeVel.getY() + " m/s");
-                    //
-                    // double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
-                    //
-                    // if (speedOverrideButton.getAsBoolean()) {
-                    // slowdownDueToElevator = 1;
-                    // }
-                    //
-                    // // Send to drive
-                    // drive.runVelocity(
-                    // ChassisSpeeds.fromFieldRelativeSpeeds(
-                    // fieldRelativeVel.getX() * slowdownDueToElevator,
-                    // fieldRelativeVel.getY() * slowdownDueToElevator,
-                    // omega * slowdownDueToElevator,
-                    // drive.getRotation()
-                    // )
-                    // );
-                    // return; // Skip default joystick mode when holding bumper
-                    // }
-                    // }
+//
 
                     // Default dmJoystick mode
                     currentDriveMode = DriveMode.dmJoystick;
@@ -305,64 +222,151 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-                () -> {
-                    currentDriveMode = DriveMode.dmApproach;
-                    // Name constants
-                    Translation2d currentTranslation = drive.getPose().getTranslation();
-                    Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                        () -> {
+                            currentDriveMode = DriveMode.dmApproach;
+                            // Name constants
+                            Translation2d currentTranslation = drive.getPose().getTranslation();
+                            Translation2d approachTranslation = approachSupplier.get().getTranslation().plus(
+                                    new Translation2d(Units.inchesToMeters(9.25), Rotation2d.fromDegrees(90).plus(approachSupplier.get().getRotation()))
+                            );
 
-                    double distanceToApproach = currentTranslation.getDistance(approachTranslation);
+                            double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 
-                    Rotation2d alignmentDirection = approachSupplier.get().getRotation();
+                            Rotation2d alignmentDirection = approachSupplier.get().getRotation();
 
-                    // Find lateral distance from goal
-                    Translation2d goalTranslation = new Translation2d(
-                            alignmentDirection.getCos() * distanceToApproach + approachTranslation.getX(),
-                            alignmentDirection.getSin() * distanceToApproach + approachTranslation.getY());
+                            // Find lateral distance from goal
+                            Translation2d goalTranslation = new Translation2d(
+                                    alignmentDirection.getCos() * distanceToApproach + approachTranslation.getX(),
+                                    alignmentDirection.getSin() * distanceToApproach + approachTranslation.getY());
 
-                    Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
-                    double distanceToGoal = Math.hypot(robotToGoal.getX(), robotToGoal.getY());
+                            Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
+                            double distanceToGoal =
+                                    Math.hypot(robotToGoal.getX(), robotToGoal.getY());
 
-                    // Calculate lateral linear velocity
-                    Translation2d offsetVector = new Translation2d(
-                            alignController.calculate(distanceToGoal, Units.inchesToMeters(9.25)), 0)
-                            .rotateBy(robotToGoal.getAngle());
+                            // Calculate lateral linear velocity
+                            Translation2d offsetVector =
+                                    new Translation2d(alignController.calculate(distanceToGoal), 0)
+                                            .rotateBy(robotToGoal.getAngle());
 
-                    Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+                            Logger.recordOutput("AlignDebug/Current", distanceToGoal);
 
-                    // Calculate total linear velocity
-                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(0,
-                            ySupplier.getAsDouble()).rotateBy(
-                                    approachSupplier.get().getRotation())
-                            .rotateBy(Rotation2d.kCCW_90deg)
-                            .plus(offsetVector);
+                            // Calculate total linear velocity
+                            Translation2d linearVelocity =
+                                    getLinearVelocityFromJoysticks(0,
+                                            ySupplier.getAsDouble()).rotateBy(
+                                                    approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
+                                            .plus(offsetVector);
 
-                    SmartDashboard.putData(alignController); // TODO: Calibrate PID
-                    Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
+                            SmartDashboard.putData(alignController); // TODO: Calibrate PID
+                            Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
 
-                    // Calculate angular speed
-                    double omega = angleController.calculate(
-                            drive.getRotation().getRadians(), approachSupplier.get().getRotation()
-                                    .rotateBy(Rotation2d.kCW_90deg).getRadians());
+                            // Calculate angular speed
+                            double omega =
+                                    angleController.calculate(
+                                            drive.getRotation().getRadians(), approachSupplier.get().getRotation()
+                                                    .rotateBy(Rotation2d.kCW_90deg).getRadians());
 
-                    SmartDashboard.putNumber("Current Angle (rad)", drive.getRotation().getRadians());
-                    SmartDashboard.putNumber("Target Angle (rad)",
-                            approachSupplier.get().getRotation().rotateBy(Rotation2d.kCCW_90deg).getRadians());
+                            SmartDashboard.putNumber("Current Angle (rad)", drive.getRotation().getRadians());
+                            SmartDashboard.putNumber("Target Angle (rad)", approachSupplier.get().getRotation().rotateBy(Rotation2d.kCCW_90deg).getRadians());
 
-                    // Convert to field relative speeds & send command
-                    ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                            omega);
-                    drive.runVelocity(
-                            ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    speeds,
-                                    drive.getRotation()));
-                },
-                drive)
+                            // Convert to field relative speeds & send command
+                            ChassisSpeeds speeds =
+                                    new ChassisSpeeds(
+                                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                                            omega);
+                            drive.runVelocity(
+                                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                                            speeds,
+                                            drive.getRotation()));
+                        },
+                        drive)
 
                 // Reset PID controller when command starts
                 .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+    }
+
+    public static Command oldJoystickApproach(
+            Drive drive,
+            DoubleSupplier ySupplier,
+            DoubleSupplier xSupplier,
+            DoubleSupplier elevatorHeightInches,
+            BooleanSupplier speedOverrideButton,
+            BooleanSupplier isRight) {
+        return Commands.run(
+                () -> {
+                    Pose2d poseOfNearestReefTag = drive.getPoseOfNearestTag();
+                    if (poseOfNearestReefTag != null) {
+                        // Get relative pose in AprilTag frame
+                        Pose2d robotInTagFrame = drive.getPose().relativeTo(poseOfNearestReefTag);
+                        // Joystick inputs as a 2D vector (field-relative from driver's POV)
+                        double joyX = xSupplier.getAsDouble();
+                        double joyY = ySupplier.getAsDouble();
+                        Translation2d joystickVector = new Translation2d(joyX, joyY);
+                        //                            System.out.println("Raw Joystick Input: X = " + joyX + ", Y = " + joyY);
+
+                        // Get the perpendicular direction to the AprilTag’s rotation (tag-relative Y axis in field frame)
+                        Rotation2d tagRotation = poseOfNearestReefTag.getRotation();
+                        Translation2d tagPerpendicular = new Translation2d(
+                                -tagRotation.getSin(),
+                                tagRotation.getCos()
+                        ); // Field-relative perpendicular vector
+
+                        //                            System.out.println("Tag Perpendicular (field-relative): X = " + tagPerpendicular.getX() + ", Y = " + tagPerpendicular.getY());
+                        //                            System.out.println("Robot to tag pose: X = " + robotInTagFrame.getX() + ", Y = " + robotInTagFrame.getY());
+
+                        // Project joystick vector onto the perpendicular direction
+                        double lateralSpeedComponent = joystickVector.rotateBy(tagRotation).getY(); // -xSupplier.getAsDouble()
+                        //                            System.out.println("Projected joystick component onto perpendicular: " + lateralSpeedComponent);
+
+                        // Scale lateral speed
+                        double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
+                        //                            System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
+
+                        double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
+
+                        // Proportional controller for X (distance to tag forward/back)
+                        double kP = 3; // Tune this gain as needed
+                        double forwardVelocity;
+                        if (isRight.getAsBoolean()) {
+                            forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES));
+                        } else {
+
+                            forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES)); //
+                        }
+
+                        forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(), drive.getMaxLinearSpeedMetersPerSec());
+                        //                            System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
+
+
+                        omega = MathUtil.clamp(omega, -0.3, 0.3);
+                        omega = omega * drive.getMaxAngularSpeedRadPerSec();
+                        //                            System.out.println("Omega (rotational speed): " + omega + " rad/s");
+
+                        // Create velocity vector in tag-relative frame
+                        Translation2d tagRelativeVel = new Translation2d(lateralVelocity, forwardVelocity);
+
+                        // Convert to field-relative velocity
+                        Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
+                        //                            System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
+
+                        double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+
+                        if (speedOverrideButton.getAsBoolean()) {
+                            slowdownDueToElevator = 1;
+                        }
+
+                        // Send to drive
+                        drive.runVelocity(
+                                ChassisSpeeds.fromFieldRelativeSpeeds(
+                                        fieldRelativeVel.getX() * slowdownDueToElevator,
+                                        fieldRelativeVel.getY() * slowdownDueToElevator,
+                                        omega * slowdownDueToElevator,
+                                        drive.getRotation()
+                                )
+                        );
+                    }
+                });
     }
 
     /**
@@ -386,10 +390,10 @@ public class DriveCommands {
 
                 // Allow modules to orient
                 Commands.run(
-                        () -> {
-                            drive.runCharacterization(0.0);
-                        },
-                        drive)
+                                () -> {
+                                    drive.runCharacterization(0.0);
+                                },
+                                drive)
                         .withTimeout(FF_START_DELAY),
 
                 // Start timer

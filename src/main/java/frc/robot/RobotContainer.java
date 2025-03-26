@@ -5,21 +5,20 @@
 package frc.robot;
 
 import static frc.robot.Constants.Delivery.CONVEYOR_IN_SPEED;
-import static frc.robot.Constants.Delivery.CONVEYOR_OUT_SPEED;
+import static frc.robot.commands.DriveCommands.oldJoystickApproach;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import static java.lang.Math.abs;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -47,6 +46,8 @@ public class RobotContainer {
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
+    private final LoggedDashboardChooser<String> autoLineUp;
+
 
     // AK-enabled Subsystems
     public final Drive swerveDrivetrain;
@@ -74,6 +75,11 @@ public class RobotContainer {
         // Logic Triggers
         registerNamedCommands();
 
+
+        autoLineUp = new LoggedDashboardChooser<>("Drive Speed");
+
+        autoLineUp.addDefaultOption("Old Line Up", "Old Line Up");
+        autoLineUp.addOption("New Line Up", "New Line Up");
         // Set up auto routines
         m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -169,19 +175,43 @@ public class RobotContainer {
                 Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
 
         // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
-        driveController.rightBumper()
+        driveController.rightBumper().and(() -> Objects.equals(autoLineUp.get(), "New Line Up"))
                 .whileTrue(
                         joystickApproach(
                                 () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(),
                                         FieldConstants.ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
-        driveController.leftBumper()
+        driveController.leftBumper().and(() -> Objects.equals(autoLineUp.get(), "New Line Up"))
                 .whileTrue(
                         joystickApproach(
-                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(),
-                                        FieldConstants.ReefSide.LEFT)));
-        //
+                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.LEFT)));
+
+
+        // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
+        driveController.rightBumper().and(() -> Objects.equals(autoLineUp.get(), "Old Line Up"))
+                .whileTrue(
+                        oldJoystickApproach(
+                                swerveDrivetrain,
+                                driveController::getLeftY,
+                                driveController::getLeftX,
+                                elevator::getElevatorPosition,
+                                () -> driveController.x().getAsBoolean(),
+                                () -> true));
+
+        // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
+        driveController.leftBumper().and(() -> Objects.equals(autoLineUp.get(), "Old Line Up"))
+                .whileTrue(
+                        oldJoystickApproach(
+                                swerveDrivetrain,
+                                driveController::getLeftY,
+                                driveController::getLeftX,
+                                elevator::getElevatorPosition,
+                                () -> driveController.x().getAsBoolean(),
+                                () -> false));
+
+
+//
         manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
         manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
 
