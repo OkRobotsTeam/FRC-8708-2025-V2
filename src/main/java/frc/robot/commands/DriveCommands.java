@@ -66,16 +66,14 @@ public class DriveCommands {
 
     private static DriveMode currentDriveMode = DriveMode.dmJoystick;
 
-    public static DriveMode getDriveMode()
-    {
+    public static DriveMode getDriveMode() {
         return currentDriveMode;
     }
 
-    private DriveCommands()
-    {}
+    private DriveCommands() {
+    }
 
-    private static Translation2d getLinearVelocityFromJoysticks(double x, double y)
-    {
+    private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
         // Apply deadband
         double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
         Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
@@ -85,8 +83,8 @@ public class DriveCommands {
 
         // Return new linear velocity
         return new Pose2d(new Translation2d(), linearDirection)
-            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-            .getTranslation();
+                .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                .getTranslation();
     }
 
     /**
@@ -100,95 +98,100 @@ public class DriveCommands {
             DoubleSupplier omegaSupplier,
             DoubleSupplier leftTrigger,
             DoubleSupplier elevatorHeightInches,
-            BooleanSupplier speedOverrideButton
-    )
+            BooleanSupplier speedOverrideButton)
 
     {
         return Commands.run(
                 () -> {
-//                    if (controller.leftBumper().getAsBoolean() || controller.rightBumper().getAsBoolean()) {
-//                        Pose2d poseOfNearestReefTag = drive.getPoseOfNearestTag();
-//                        if (poseOfNearestReefTag != null) {
-//                            // Get relative pose in AprilTag frame
-//                            Pose2d robotInTagFrame = drive.getPose().relativeTo(poseOfNearestReefTag);
-//                            // Joystick inputs as a 2D vector (field-relative from driver's POV)
-//                            double joyX = xSupplier.getAsDouble();
-//                            double joyY = ySupplier.getAsDouble();
-//                            Translation2d joystickVector = new Translation2d(joyX, joyY);
-////                            System.out.println("Raw Joystick Input: X = " + joyX + ", Y = " + joyY);
-//
-//                            // Get the perpendicular direction to the AprilTag’s rotation (tag-relative Y axis in field frame)
-//                            Rotation2d tagRotation = poseOfNearestReefTag.getRotation();
-//                            Translation2d tagPerpendicular = new Translation2d(
-//                                    -tagRotation.getSin(),
-//                                    tagRotation.getCos()
-//                            ); // Field-relative perpendicular vector
-//
-////                            System.out.println("Tag Perpendicular (field-relative): X = " + tagPerpendicular.getX() + ", Y = " + tagPerpendicular.getY());
-////                            System.out.println("Robot to tag pose: X = " + robotInTagFrame.getX() + ", Y = " + robotInTagFrame.getY());
-//
-//                            // Project joystick vector onto the perpendicular direction
-//                            double lateralSpeedComponent = joystickVector.rotateBy(tagRotation).getY(); // -xSupplier.getAsDouble()
-////                            System.out.println("Projected joystick component onto perpendicular: " + lateralSpeedComponent);
-//
-//                            // Scale lateral speed
-//                            double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
-////                            System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
-//
-//                            double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
-//
-//                            // Proportional controller for X (distance to tag forward/back)
-//                            double kP = 3; // Tune this gain as needed
-//                            double forwardVelocity;
-//                            if (controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean()) {
-//                                forwardVelocity = kP * (-robotInTagFrame.getY() + (Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES + VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES) / 2));
-//                                omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(-90))).getRotations() * 2;
-//                            } else if (controller.rightBumper().getAsBoolean()) {
-//                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES));
-//                            } else {
-//
-//                                forwardVelocity = kP * (-robotInTagFrame.getY() + Units.inchesToMeters(VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES)); //
-//                            }
-//
-//                            forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(), drive.getMaxLinearSpeedMetersPerSec());
-////                            System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
-//
-//
-//                            omega = MathUtil.clamp(omega, -0.3, 0.3);
-//                            omega = omega * drive.getMaxAngularSpeedRadPerSec();
-////                            System.out.println("Omega (rotational speed): " + omega + " rad/s");
-//
-//                            // Create velocity vector in tag-relative frame
-//                            Translation2d tagRelativeVel = new Translation2d(lateralVelocity, forwardVelocity);
-//
-//                            // Convert to field-relative velocity
-//                            Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
-////                            System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
-//
-//                            double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
-//
-//                            if (speedOverrideButton.getAsBoolean()) {
-//                                slowdownDueToElevator = 1;
-//                            }
-//
-//                            // Send to drive
-//                            drive.runVelocity(
-//                                    ChassisSpeeds.fromFieldRelativeSpeeds(
-//                                            fieldRelativeVel.getX() * slowdownDueToElevator,
-//                                            fieldRelativeVel.getY() * slowdownDueToElevator,
-//                                            omega * slowdownDueToElevator,
-//                                            drive.getRotation()
-//                                    )
-//                            );
-//                            return; // Skip default joystick mode when holding bumper
-//                        }
-//                    }
+                    // if (controller.leftBumper().getAsBoolean() || controller.rightBumper().getAsBoolean()) {
+                    // Pose2d poseOfNearestReefTag = drive.getPoseOfNearestTag();
+                    // if (poseOfNearestReefTag != null) {
+                    // // Get relative pose in AprilTag frame
+                    // Pose2d robotInTagFrame = drive.getPose().relativeTo(poseOfNearestReefTag);
+                    // // Joystick inputs as a 2D vector (field-relative from driver's POV)
+                    // double joyX = xSupplier.getAsDouble();
+                    // double joyY = ySupplier.getAsDouble();
+                    // Translation2d joystickVector = new Translation2d(joyX, joyY);
+                    //// System.out.println("Raw Joystick Input: X = " + joyX + ", Y = " + joyY);
+                    //
+                    // // Get the perpendicular direction to the AprilTag’s rotation (tag-relative Y axis in field frame)
+                    // Rotation2d tagRotation = poseOfNearestReefTag.getRotation();
+                    // Translation2d tagPerpendicular = new Translation2d(
+                    // -tagRotation.getSin(),
+                    // tagRotation.getCos()
+                    // ); // Field-relative perpendicular vector
+                    //
+                    //// System.out.println("Tag Perpendicular (field-relative): X = " + tagPerpendicular.getX() + ", Y = " +
+                    // tagPerpendicular.getY());
+                    //// System.out.println("Robot to tag pose: X = " + robotInTagFrame.getX() + ", Y = " + robotInTagFrame.getY());
+                    //
+                    // // Project joystick vector onto the perpendicular direction
+                    // double lateralSpeedComponent = joystickVector.rotateBy(tagRotation).getY(); // -xSupplier.getAsDouble()
+                    //// System.out.println("Projected joystick component onto perpendicular: " + lateralSpeedComponent);
+                    //
+                    // // Scale lateral speed
+                    // double lateralVelocity = lateralSpeedComponent * drive.getMaxLinearSpeedMetersPerSec();
+                    //// System.out.println("Lateral velocity set to: " + lateralVelocity + " m/s");
+                    //
+                    // double omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(90))).getRotations() * 2;
+                    //
+                    // // Proportional controller for X (distance to tag forward/back)
+                    // double kP = 3; // Tune this gain as needed
+                    // double forwardVelocity;
+                    // if (controller.leftBumper().getAsBoolean() && controller.rightBumper().getAsBoolean()) {
+                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
+                    // (Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES +
+                    // VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES) / 2));
+                    // omega = -(robotInTagFrame.getRotation().plus(Rotation2d.fromDegrees(-90))).getRotations() * 2;
+                    // } else if (controller.rightBumper().getAsBoolean()) {
+                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
+                    // Units.inchesToMeters(VisionConstants.RIGHT_ALIGNMENT_OFFSET_INCHES));
+                    // } else {
+                    //
+                    // forwardVelocity = kP * (-robotInTagFrame.getY() +
+                    // Units.inchesToMeters(VisionConstants.LEFT_ALIGNMENT_OFFSET_INCHES)); //
+                    // }
+                    //
+                    // forwardVelocity = MathUtil.clamp(forwardVelocity, -drive.getMaxLinearSpeedMetersPerSec(),
+                    // drive.getMaxLinearSpeedMetersPerSec());
+                    //// System.out.println("Proportional control (X axis): " + forwardVelocity + " m/s");
+                    //
+                    //
+                    // omega = MathUtil.clamp(omega, -0.3, 0.3);
+                    // omega = omega * drive.getMaxAngularSpeedRadPerSec();
+                    //// System.out.println("Omega (rotational speed): " + omega + " rad/s");
+                    //
+                    // // Create velocity vector in tag-relative frame
+                    // Translation2d tagRelativeVel = new Translation2d(lateralVelocity, forwardVelocity);
+                    //
+                    // // Convert to field-relative velocity
+                    // Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
+                    //// System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " +
+                    // fieldRelativeVel.getY() + " m/s");
+                    //
+                    // double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+                    //
+                    // if (speedOverrideButton.getAsBoolean()) {
+                    // slowdownDueToElevator = 1;
+                    // }
+                    //
+                    // // Send to drive
+                    // drive.runVelocity(
+                    // ChassisSpeeds.fromFieldRelativeSpeeds(
+                    // fieldRelativeVel.getX() * slowdownDueToElevator,
+                    // fieldRelativeVel.getY() * slowdownDueToElevator,
+                    // omega * slowdownDueToElevator,
+                    // drive.getRotation()
+                    // )
+                    // );
+                    // return; // Skip default joystick mode when holding bumper
+                    // }
+                    // }
 
                     // Default dmJoystick mode
                     currentDriveMode = DriveMode.dmJoystick;
-                    Translation2d linearVelocity =
-                            getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                                    ySupplier.getAsDouble());
+                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                            ySupplier.getAsDouble());
 
                     linearVelocity = linearVelocity.times(drive.getSpeed());
 
@@ -201,16 +204,13 @@ public class DriveCommands {
                     omega = Math.copySign(omega * omega, omega);
                     omega = omega * drive.getSpeed();
 
-                    ChassisSpeeds speeds =
-                            new ChassisSpeeds(
-                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
-                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
-                                    omega * drive.getMaxAngularSpeedRadPerSec() * slowdownDueToElevator);
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec() * slowdownDueToElevator,
+                            omega * drive.getMaxAngularSpeedRadPerSec() * slowdownDueToElevator);
 
-                    boolean isFlipped =
-                            DriverStation.getAlliance().isPresent()
-                                    && DriverStation.getAlliance().get() == Alliance.Red;
-
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
 
                     drive.runVelocity(
                             ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -222,22 +222,19 @@ public class DriveCommands {
                 drive);
     }
 
-
     /**
      * Field relative drive command using joystick for linear control and PID for angular control.
      * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
      * absolute rotation with a joystick.
      */
     public static Command joystickDriveAtAngle(
-        Drive drive,
-        DoubleSupplier xSupplier,
-        DoubleSupplier ySupplier,
-        Supplier<Rotation2d> rotationSupplier)
-    {
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Rotation2d> rotationSupplier) {
 
         // Create PID controller
-        ProfiledPIDController angleController =
-            new ProfiledPIDController(
+        ProfiledPIDController angleController = new ProfiledPIDController(
                 ANGLE_KP,
                 0.0,
                 ANGLE_KD,
@@ -246,38 +243,34 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-            () -> {
-                currentDriveMode = DriveMode.dmAngle;
-                // Get linear velocity
-                Translation2d linearVelocity =
-                    getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                        ySupplier.getAsDouble());
+                () -> {
+                    currentDriveMode = DriveMode.dmAngle;
+                    // Get linear velocity
+                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                            ySupplier.getAsDouble());
 
-                // Calculate angular speed
-                double omega =
-                    angleController.calculate(
-                        drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                    // Calculate angular speed
+                    double omega = angleController.calculate(
+                            drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
-                // Convert to field relative speeds & send command
-                ChassisSpeeds speeds =
-                    new ChassisSpeeds(
-                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                        omega);
-                boolean isFlipped =
-                    DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get() == Alliance.Red;
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        speeds,
-                        isFlipped
-                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                            : drive.getRotation()));
-            },
-            drive)
+                    // Convert to field relative speeds & send command
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                            omega);
+                    boolean isFlipped = DriverStation.getAlliance().isPresent()
+                            && DriverStation.getAlliance().get() == Alliance.Red;
+                    drive.runVelocity(
+                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    speeds,
+                                    isFlipped
+                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                            : drive.getRotation()));
+                },
+                drive)
 
-            // Reset PID controller when command starts
-            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+                // Reset PID controller when command starts
+                .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
     /**
@@ -287,14 +280,12 @@ public class DriveCommands {
      * a rotation facing away from the target
      */
     public static Command joystickApproach(
-        Drive drive,
-        DoubleSupplier ySupplier,
-        Supplier<Pose2d> approachSupplier)
-    {
+            Drive drive,
+            DoubleSupplier ySupplier,
+            Supplier<Pose2d> approachSupplier) {
 
         // Create PID controller
-        TuneableProfiledPID angleController =
-            new TuneableProfiledPID(
+        TuneableProfiledPID angleController = new TuneableProfiledPID(
                 "angleController",
                 ANGLE_KP,
                 0.0,
@@ -303,8 +294,7 @@ public class DriveCommands {
                 ANGLE_MAX_ACCELERATION);
         angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-        TuneableProfiledPID alignController =
-            new TuneableProfiledPID(
+        TuneableProfiledPID alignController = new TuneableProfiledPID(
                 "alignController",
                 1,
                 0.0,
@@ -315,66 +305,64 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-            () -> {
-                currentDriveMode = DriveMode.dmApproach;
-                // Name constants
-                Translation2d currentTranslation = drive.getPose().getTranslation();
-                Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                () -> {
+                    currentDriveMode = DriveMode.dmApproach;
+                    // Name constants
+                    Translation2d currentTranslation = drive.getPose().getTranslation();
+                    Translation2d approachTranslation = approachSupplier.get().getTranslation();
 
-                double distanceToApproach = currentTranslation.getDistance(approachTranslation);
+                    double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 
-                Rotation2d alignmentDirection = approachSupplier.get().getRotation();
+                    Rotation2d alignmentDirection = approachSupplier.get().getRotation();
 
-                // Find lateral distance from goal
-                Translation2d goalTranslation = new Translation2d(
-                    alignmentDirection.getCos() * distanceToApproach + approachTranslation.getX(),
-                    alignmentDirection.getSin() * distanceToApproach + approachTranslation.getY());
+                    // Find lateral distance from goal
+                    Translation2d goalTranslation = new Translation2d(
+                            alignmentDirection.getCos() * distanceToApproach + approachTranslation.getX(),
+                            alignmentDirection.getSin() * distanceToApproach + approachTranslation.getY());
 
-                Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
-                double distanceToGoal =
-                    Math.hypot(robotToGoal.getX(), robotToGoal.getY());
+                    Translation2d robotToGoal = currentTranslation.minus(goalTranslation);
+                    double distanceToGoal = Math.hypot(robotToGoal.getX(), robotToGoal.getY());
 
-                // Calculate lateral linear velocity
-                Translation2d offsetVector =
-                    new Translation2d(alignController.calculate(distanceToGoal,Units.inchesToMeters(9.25)), 0)
-                        .rotateBy(robotToGoal.getAngle());
+                    // Calculate lateral linear velocity
+                    Translation2d offsetVector = new Translation2d(
+                            alignController.calculate(distanceToGoal, Units.inchesToMeters(9.25)), 0)
+                            .rotateBy(robotToGoal.getAngle());
 
-                Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+                    Logger.recordOutput("AlignDebug/Current", distanceToGoal);
 
-                // Calculate total linear velocity
-                Translation2d linearVelocity =
-                    getLinearVelocityFromJoysticks(0,
-                        ySupplier.getAsDouble()).rotateBy(
-                            approachSupplier.get().getRotation()).rotateBy(Rotation2d.kCCW_90deg)
+                    // Calculate total linear velocity
+                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(0,
+                            ySupplier.getAsDouble()).rotateBy(
+                                    approachSupplier.get().getRotation())
+                            .rotateBy(Rotation2d.kCCW_90deg)
                             .plus(offsetVector);
 
-                SmartDashboard.putData(alignController); // TODO: Calibrate PID
-                Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
+                    SmartDashboard.putData(alignController); // TODO: Calibrate PID
+                    Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
 
-                // Calculate angular speed
-                double omega =
-                    angleController.calculate(
-                        drive.getRotation().getRadians(), approachSupplier.get().getRotation()
-                            .rotateBy(Rotation2d.kCW_90deg).getRadians());
+                    // Calculate angular speed
+                    double omega = angleController.calculate(
+                            drive.getRotation().getRadians(), approachSupplier.get().getRotation()
+                                    .rotateBy(Rotation2d.kCW_90deg).getRadians());
 
-                SmartDashboard.putNumber("Current Angle (rad)", drive.getRotation().getRadians());
-                SmartDashboard.putNumber("Target Angle (rad)", approachSupplier.get().getRotation().rotateBy(Rotation2d.kCCW_90deg).getRadians());
+                    SmartDashboard.putNumber("Current Angle (rad)", drive.getRotation().getRadians());
+                    SmartDashboard.putNumber("Target Angle (rad)",
+                            approachSupplier.get().getRotation().rotateBy(Rotation2d.kCCW_90deg).getRadians());
 
-                // Convert to field relative speeds & send command
-                ChassisSpeeds speeds =
-                    new ChassisSpeeds(
-                        linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                        linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                        omega);
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        speeds,
-                        drive.getRotation()));
-            },
-            drive)
+                    // Convert to field relative speeds & send command
+                    ChassisSpeeds speeds = new ChassisSpeeds(
+                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                            omega);
+                    drive.runVelocity(
+                            ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    speeds,
+                                    drive.getRotation()));
+                },
+                drive)
 
-            // Reset PID controller when command starts
-            .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+                // Reset PID controller when command starts
+                .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
     /**
@@ -383,135 +371,132 @@ public class DriveCommands {
      * <p>
      * This command should only be used in voltage control mode.
      */
-    public static Command feedforwardCharacterization(Drive drive)
-    {
+    public static Command feedforwardCharacterization(Drive drive) {
         List<Double> velocitySamples = new LinkedList<>();
         List<Double> voltageSamples = new LinkedList<>();
         Timer timer = new Timer();
 
         return Commands.sequence(
-            // Reset data
-            Commands.runOnce(
-                () -> {
-                    velocitySamples.clear();
-                    voltageSamples.clear();
-                }),
+                // Reset data
+                Commands.runOnce(
+                        () -> {
+                            velocitySamples.clear();
+                            voltageSamples.clear();
+                        }),
 
-            // Allow modules to orient
-            Commands.run(
-                () -> {
-                    drive.runCharacterization(0.0);
-                },
-                drive)
-                .withTimeout(FF_START_DELAY),
+                // Allow modules to orient
+                Commands.run(
+                        () -> {
+                            drive.runCharacterization(0.0);
+                        },
+                        drive)
+                        .withTimeout(FF_START_DELAY),
 
-            // Start timer
-            Commands.runOnce(timer::restart),
+                // Start timer
+                Commands.runOnce(timer::restart),
 
-            // Accelerate and gather data
-            Commands.run(
-                () -> {
-                    double voltage = timer.get() * FF_RAMP_RATE;
-                    drive.runCharacterization(voltage);
-                    velocitySamples.add(drive.getFFCharacterizationVelocity());
-                    voltageSamples.add(voltage);
-                },
-                drive)
+                // Accelerate and gather data
+                Commands.run(
+                        () -> {
+                            double voltage = timer.get() * FF_RAMP_RATE;
+                            drive.runCharacterization(voltage);
+                            velocitySamples.add(drive.getFFCharacterizationVelocity());
+                            voltageSamples.add(voltage);
+                        },
+                        drive)
 
-                // When cancelled, calculate and print results
-                .finallyDo(
-                    () -> {
-                        int n = velocitySamples.size();
-                        double sumX = 0.0;
-                        double sumY = 0.0;
-                        double sumXY = 0.0;
-                        double sumX2 = 0.0;
-                        for (int i = 0; i < n; i++) {
-                            sumX += velocitySamples.get(i);
-                            sumY += voltageSamples.get(i);
-                            sumXY += velocitySamples.get(i) * voltageSamples.get(i);
-                            sumX2 += velocitySamples.get(i) * velocitySamples.get(i);
-                        }
-                        double kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX);
-                        double kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                        // When cancelled, calculate and print results
+                        .finallyDo(
+                                () -> {
+                                    int n = velocitySamples.size();
+                                    double sumX = 0.0;
+                                    double sumY = 0.0;
+                                    double sumXY = 0.0;
+                                    double sumX2 = 0.0;
+                                    for (int i = 0; i < n; i++) {
+                                        sumX += velocitySamples.get(i);
+                                        sumY += voltageSamples.get(i);
+                                        sumXY += velocitySamples.get(i) * voltageSamples.get(i);
+                                        sumX2 += velocitySamples.get(i) * velocitySamples.get(i);
+                                    }
+                                    double kS = (sumY * sumX2 - sumX * sumXY) / (n * sumX2 - sumX * sumX);
+                                    double kV = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
-                        NumberFormat formatter = new DecimalFormat("#0.00000");
-                        System.out
-                            .println("********** Drive FF Characterization Results **********");
-                        System.out.println("\tkS: " + formatter.format(kS));
-                        System.out.println("\tkV: " + formatter.format(kV));
-                    }));
+                                    NumberFormat formatter = new DecimalFormat("#0.00000");
+                                    System.out
+                                            .println("********** Drive FF Characterization Results **********");
+                                    System.out.println("\tkS: " + formatter.format(kS));
+                                    System.out.println("\tkV: " + formatter.format(kV));
+                                }));
     }
 
     /** Measures the robot's wheel radius by spinning in a circle. */
-    public static Command  wheelRadiusCharacterization(Drive drive)
-    {
+    public static Command wheelRadiusCharacterization(Drive drive) {
         SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
         WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
 
         return Commands.parallel(
-            // Drive control sequence
-            Commands.sequence(
-                // Reset acceleration limiter
-                Commands.runOnce(
-                    () -> {
-                        limiter.reset(0.0);
-                    }),
+                // Drive control sequence
+                Commands.sequence(
+                        // Reset acceleration limiter
+                        Commands.runOnce(
+                                () -> {
+                                    limiter.reset(0.0);
+                                }),
 
-                // Turn in place, accelerating up to full speed
-                Commands.run(
-                    () -> {
-                        double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
-                        drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
-                    },
-                    drive)),
+                        // Turn in place, accelerating up to full speed
+                        Commands.run(
+                                () -> {
+                                    double speed = limiter.calculate(WHEEL_RADIUS_MAX_VELOCITY);
+                                    drive.runVelocity(new ChassisSpeeds(0.0, 0.0, speed));
+                                },
+                                drive)),
 
-            // Measurement sequence
-            Commands.sequence(
-                // Wait for modules to fully orient before starting measurement
-                Commands.waitSeconds(1.0),
+                // Measurement sequence
+                Commands.sequence(
+                        // Wait for modules to fully orient before starting measurement
+                        Commands.waitSeconds(1.0),
 
-                // Record starting measurement
-                Commands.runOnce(
-                    () -> {
-                        state.positions = drive.getWheelRadiusCharacterizationPositions();
-                        state.lastAngle = drive.getRotation();
-                        state.gyroDelta = 0.0;
-                    }),
+                        // Record starting measurement
+                        Commands.runOnce(
+                                () -> {
+                                    state.positions = drive.getWheelRadiusCharacterizationPositions();
+                                    state.lastAngle = drive.getRotation();
+                                    state.gyroDelta = 0.0;
+                                }),
 
-                // Update gyro delta
-                Commands.run(
-                    () -> {
-                        var rotation = drive.getRotation();
-                        state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
-                        state.lastAngle = rotation;
-                    })
+                        // Update gyro delta
+                        Commands.run(
+                                () -> {
+                                    var rotation = drive.getRotation();
+                                    state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
+                                    state.lastAngle = rotation;
+                                })
 
-                    // When cancelled, calculate and print results
-                    .finallyDo(
-                        () -> {
-                            double[] positions = drive.getWheelRadiusCharacterizationPositions();
-                            double wheelDelta = 0.0;
-                            for (int i = 0; i < 4; i++) {
-                                wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
-                            }
-                            double wheelRadius =
-                                (state.gyroDelta * Drive.DRIVE_BASE_RADIUS) / wheelDelta;
+                                // When cancelled, calculate and print results
+                                .finallyDo(
+                                        () -> {
+                                            double[] positions = drive.getWheelRadiusCharacterizationPositions();
+                                            double wheelDelta = 0.0;
+                                            for (int i = 0; i < 4; i++) {
+                                                wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
+                                            }
+                                            double wheelRadius = (state.gyroDelta * Drive.DRIVE_BASE_RADIUS) / wheelDelta;
 
-                            NumberFormat formatter = new DecimalFormat("#0.000");
-                            System.out.println(
-                                "********** Wheel Radius Characterization Results **********");
-                            System.out.println(
-                                "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
-                            System.out.println(
-                                "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
-                            System.out.println(
-                                "\tWheel Radius: "
-                                    + formatter.format(wheelRadius)
-                                    + " meters, "
-                                    + formatter.format(Units.metersToInches(wheelRadius))
-                                    + " inches");
-                        })));
+                                            NumberFormat formatter = new DecimalFormat("#0.000");
+                                            System.out.println(
+                                                    "********** Wheel Radius Characterization Results **********");
+                                            System.out.println(
+                                                    "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
+                                            System.out.println(
+                                                    "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
+                                            System.out.println(
+                                                    "\tWheel Radius: "
+                                                            + formatter.format(wheelRadius)
+                                                            + " meters, "
+                                                            + formatter.format(Units.metersToInches(wheelRadius))
+                                                            + " inches");
+                                        })));
     }
 
     private static class WheelRadiusCharacterizationState {
@@ -519,6 +504,5 @@ public class DriveCommands {
         Rotation2d lastAngle = new Rotation2d();
         double gyroDelta = 0.0;
     }
-
 
 }
