@@ -30,7 +30,7 @@ public class Pickup extends SubsystemBase {
         double pidOutput = rotationPID.calculate(rotationMotor.getPosition().getValueAsDouble());
         rotationMotor.set(pidOutput);
     }
-
+    
     public Pickup() {
         rotationPID.reset();
         rotationMotor.setNeutralMode(NeutralModeValue.Brake);

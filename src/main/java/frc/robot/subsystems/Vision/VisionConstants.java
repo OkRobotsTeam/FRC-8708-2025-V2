@@ -32,8 +32,8 @@ public class VisionConstants {
         try {
             aprilTagLayout =
                 new AprilTagFieldLayout(Path
-                                        .of(Filesystem.getDeployDirectory().getAbsolutePath()
-                                            + "/vision/andymark.json"));
+                    .of(Filesystem.getDeployDirectory().getAbsolutePath()
+                        + "/vision/andymark.json"));
             usedCustomField = true;
         } catch (Exception e) {
             aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
@@ -59,16 +59,16 @@ public class VisionConstants {
 //            );
 
     public static Transform3d robotToAlignmentCamera =
-        new Transform3d(
-        Units.inchesToMeters(3), // +Forwards/ -Backwards  3.5
-        Units.inchesToMeters(-14), // +Right / -Left  11.5
-        Units.inchesToMeters(12), // +Up / -Down
-        new Rotation3d(
-            Units.degreesToRadians(0),
-            Units.degreesToRadians(0),
-            Units.degreesToRadians(-90))
+            new Transform3d(
+                    Units.inchesToMeters(3), // +Forwards/ -Backwards  3.5
+                    Units.inchesToMeters(-14), // +Right / -Left  11.5
+                    Units.inchesToMeters(12), // +Up / -Down
+                    new Rotation3d(
+                            Units.degreesToRadians(0),
+                            Units.degreesToRadians(0),
+                            Units.degreesToRadians(-90))
 
-    );
+            );
 
 //    public static Transform3d robotToFrontCamera =
 //            new Transform3d(
@@ -95,12 +95,12 @@ public class VisionConstants {
     // (Adjust to trust some cameras more than others)
     public static double[] cameraStdDevFactors =
         new double[] {
-        1.0,
-        1.0,
-    };
+                1.0,
+                1.0,
+        };
 
 //    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);
-    public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+        public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
 
     public static List<Integer> rejectedTags = List.of();
 

@@ -94,7 +94,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     private final Debouncer turnEncoderConnectedDebounce = new Debouncer(0.5);
 
     public ModuleIOTalonFX(
-        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants) {
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants)
+    {
         this.constants = constants;
         driveTalon =
             new TalonFX(constants.DriveMotorId, TunerConstants.DrivetrainConstants.CANBusName);
@@ -113,8 +114,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         driveConfig.MotorOutput.Inverted =
             constants.DriveMotorInverted
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
+                ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         tryUntilOk(5, () -> driveTalon.getConfigurator().apply(driveConfig, 0.25));
         tryUntilOk(5, () -> driveTalon.setPosition(0.0, 0.25));
 
@@ -124,12 +125,12 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.Slot0 = constants.SteerMotorGains;
         turnConfig.Feedback.FeedbackRemoteSensorID = constants.EncoderId;
         turnConfig.Feedback.FeedbackSensorSource =
-        switch (constants.FeedbackSource) {
-        case RemoteCANcoder -> FeedbackSensorSourceValue.RemoteCANcoder;
-        case FusedCANcoder -> FeedbackSensorSourceValue.FusedCANcoder;
-        case SyncCANcoder -> FeedbackSensorSourceValue.SyncCANcoder;
-            default -> FeedbackSensorSourceValue.RemoteCANcoder;
-        };
+            switch (constants.FeedbackSource) {
+                case RemoteCANcoder -> FeedbackSensorSourceValue.RemoteCANcoder;
+                case FusedCANcoder -> FeedbackSensorSourceValue.FusedCANcoder;
+                case SyncCANcoder -> FeedbackSensorSourceValue.SyncCANcoder;
+                default -> FeedbackSensorSourceValue.RemoteCANcoder;
+            };
         turnConfig.Feedback.RotorToSensorRatio = constants.SteerMotorGearRatio;
         turnConfig.MotionMagic.MotionMagicCruiseVelocity = 100.0 / constants.SteerMotorGearRatio;
         turnConfig.MotionMagic.MotionMagicAcceleration =
@@ -139,8 +140,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
         turnConfig.MotorOutput.Inverted =
             constants.SteerMotorInverted
-            ? InvertedValue.Clockwise_Positive
-            : InvertedValue.CounterClockwise_Positive;
+                ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         tryUntilOk(5, () -> turnTalon.getConfigurator().apply(turnConfig, 0.25));
 
         // Configure CANCoder
@@ -148,8 +149,8 @@ public class ModuleIOTalonFX implements ModuleIO {
         cancoderConfig.MagnetSensor.MagnetOffset = constants.EncoderOffset;
         cancoderConfig.MagnetSensor.SensorDirection =
             constants.EncoderInverted
-            ? SensorDirectionValue.Clockwise_Positive
-            : SensorDirectionValue.CounterClockwise_Positive;
+                ? SensorDirectionValue.Clockwise_Positive
+                : SensorDirectionValue.CounterClockwise_Positive;
         cancoder.getConfigurator().apply(cancoderConfig);
 
         // Create timestamp queue
@@ -188,11 +189,12 @@ public class ModuleIOTalonFX implements ModuleIO {
     }
 
     @Override
-    public void updateInputs(ModuleIOInputs inputs) {
+    public void updateInputs(ModuleIOInputs inputs)
+    {
         // Refresh all signals
         var driveStatus =
             BaseStatusSignal.refreshAll(drivePosition, driveVelocity, driveAppliedVolts,
-                                        driveCurrent);
+                driveCurrent);
         var turnStatus =
             BaseStatusSignal.refreshAll(turnPosition, turnVelocity, turnAppliedVolts, turnCurrent);
         var turnEncoderStatus = BaseStatusSignal.refreshAll(turnAbsolutePosition);
@@ -220,53 +222,57 @@ public class ModuleIOTalonFX implements ModuleIO {
             timestampQueue.stream().mapToDouble((Double value) -> value).toArray();
         inputs.odometryDrivePositionsRad =
             drivePositionQueue.stream()
-            .mapToDouble((Double value) -> Units.rotationsToRadians(value))
-            .toArray();
+                .mapToDouble((Double value) -> Units.rotationsToRadians(value))
+                .toArray();
         inputs.odometryTurnPositions =
             turnPositionQueue.stream()
-            .map((Double value) -> Rotation2d.fromRotations(value))
-            .toArray(Rotation2d[]::new);
+                .map((Double value) -> Rotation2d.fromRotations(value))
+                .toArray(Rotation2d[]::new);
         timestampQueue.clear();
         drivePositionQueue.clear();
         turnPositionQueue.clear();
     }
 
     @Override
-    public void setDriveOpenLoop(double output) {
+    public void setDriveOpenLoop(double output)
+    {
         driveTalon.setControl(
-        switch (constants.DriveMotorClosedLoopOutput) {
-    case Voltage -> voltageRequest.withOutput(output);
-        case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
-        });
+            switch (constants.DriveMotorClosedLoopOutput) {
+                case Voltage -> voltageRequest.withOutput(output);
+                case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
+            });
     }
 
     @Override
-    public void setTurnOpenLoop(double output) {
+    public void setTurnOpenLoop(double output)
+    {
         turnTalon.setControl(
-        switch (constants.SteerMotorClosedLoopOutput) {
-    case Voltage -> voltageRequest.withOutput(output);
-        case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
-        });
+            switch (constants.SteerMotorClosedLoopOutput) {
+                case Voltage -> voltageRequest.withOutput(output);
+                case TorqueCurrentFOC -> torqueCurrentRequest.withOutput(output);
+            });
     }
 
     @Override
-    public void setDriveVelocity(double velocityRadPerSec) {
+    public void setDriveVelocity(double velocityRadPerSec)
+    {
         double velocityRotPerSec = Units.radiansToRotations(velocityRadPerSec);
         driveTalon.setControl(
-        switch (constants.DriveMotorClosedLoopOutput) {
-    case Voltage -> velocityVoltageRequest.withVelocity(velocityRotPerSec);
-        case TorqueCurrentFOC -> velocityTorqueCurrentRequest
-                .withVelocity(velocityRotPerSec);
-        });
+            switch (constants.DriveMotorClosedLoopOutput) {
+                case Voltage -> velocityVoltageRequest.withVelocity(velocityRotPerSec);
+                case TorqueCurrentFOC -> velocityTorqueCurrentRequest
+                    .withVelocity(velocityRotPerSec);
+            });
     }
 
     @Override
-    public void setTurnPosition(Rotation2d rotation) {
+    public void setTurnPosition(Rotation2d rotation)
+    {
         turnTalon.setControl(
-        switch (constants.SteerMotorClosedLoopOutput) {
-    case Voltage -> positionVoltageRequest.withPosition(rotation.getRotations());
-        case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
+            switch (constants.SteerMotorClosedLoopOutput) {
+                case Voltage -> positionVoltageRequest.withPosition(rotation.getRotations());
+                case TorqueCurrentFOC -> positionTorqueCurrentRequest.withPosition(
                     rotation.getRotations());
-        });
+            });
     }
 }

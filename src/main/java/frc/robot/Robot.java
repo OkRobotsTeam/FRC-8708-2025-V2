@@ -51,7 +51,8 @@ public class Robot extends LoggedRobot {
     public static final Translation2d fieldCenter =
         new Translation2d(fieldLength / 2, fieldWidth / 2);
 
-    public Robot() {
+    public Robot()
+    {
         CanBridge.runTCP();
 
         // Record metadata
@@ -61,38 +62,38 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
         Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
         switch (BuildConstants.DIRTY) {
-        case 0:
-            Logger.recordMetadata("GitDirty", "All changes committed");
-            break;
-        case 1:
-            Logger.recordMetadata("GitDirty", "Uncomitted changes");
-            break;
-        default:
-            Logger.recordMetadata("GitDirty", "Unknown");
-            break;
+            case 0:
+                Logger.recordMetadata("GitDirty", "All changes committed");
+                break;
+            case 1:
+                Logger.recordMetadata("GitDirty", "Uncomitted changes");
+                break;
+            default:
+                Logger.recordMetadata("GitDirty", "Unknown");
+                break;
         }
 
         // Set up data receivers & replay source
         switch (Constants.currentMode) {
-        case REAL:
-            // Running on a real robot, log to a USB stick ("/U/logs")
-            Logger.addDataReceiver(new WPILOGWriter());
-            Logger.addDataReceiver(new NT4Publisher());
-            break;
+            case REAL:
+                // Running on a real robot, log to a USB stick ("/U/logs")
+                Logger.addDataReceiver(new WPILOGWriter());
+                Logger.addDataReceiver(new NT4Publisher());
+                break;
 
-        case SIM:
-            // Running a physics simulator, log to NT
-            Logger.addDataReceiver(new NT4Publisher());
-            break;
+            case SIM:
+                // Running a physics simulator, log to NT
+                Logger.addDataReceiver(new NT4Publisher());
+                break;
 
-        case REPLAY:
-            // Replaying a log, set up replay source
-            setUseTiming(false); // Run as fast as possible
-            String logPath = LogFileUtil.findReplayLog();
-            Logger.setReplaySource(new WPILOGReader(logPath));
-            Logger
-            .addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-            break;
+            case REPLAY:
+                // Replaying a log, set up replay source
+                setUseTiming(false); // Run as fast as possible
+                String logPath = LogFileUtil.findReplayLog();
+                Logger.setReplaySource(new WPILOGReader(logPath));
+                Logger
+                    .addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+                break;
         }
 
         // Start AdvantageKit logger
@@ -101,14 +102,14 @@ public class Robot extends LoggedRobot {
         // Check for valid swerve config
         var modules =
             new SwerveModuleConstants[] {
-            TunerConstants.FrontLeft,
-            TunerConstants.FrontRight,
-            TunerConstants.BackLeft,
-            TunerConstants.BackRight
-        };
+                    TunerConstants.FrontLeft,
+                    TunerConstants.FrontRight,
+                    TunerConstants.BackLeft,
+                    TunerConstants.BackRight
+            };
         for (var constants : modules) {
             if (constants.DriveMotorType != DriveMotorArrangement.TalonFX_Integrated
-                    || constants.SteerMotorType != SteerMotorArrangement.TalonFX_Integrated) {
+                || constants.SteerMotorType != SteerMotorArrangement.TalonFX_Integrated) {
                 throw new RuntimeException(
                     "You are using an unsupported swerve configuration, which this template does not support without manual customization. The 2025 release of Phoenix supports some swerve configurations which were not available during 2025 beta testing, preventing any development and support from the AdvantageKit developers.");
             }
@@ -121,7 +122,8 @@ public class Robot extends LoggedRobot {
 
     /** This function is called periodically during all modes. */
     @Override
-    public void robotPeriodic() {
+    public void robotPeriodic()
+    {
 
         // Runs the Scheduler. This is responsible for polling buttons, adding
         // newly-scheduled commands, running already-scheduled commands, removing
@@ -135,7 +137,8 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when the robot is disabled. */
     @Override
-    public void disabledInit() {
+    public void disabledInit()
+    {
         m_robotContainer.init();
         Elastic.selectTab(1);
         SmartDashboard.putData("Auto Path Preview", m_autoTraj);
@@ -144,9 +147,10 @@ public class Robot extends LoggedRobot {
 
     /** This function is called periodically when disabled. */
     @Override
-    public void disabledPeriodic() {
+    public void disabledPeriodic()
+    {
         var m_alliance = DriverStation.getAlliance().isPresent()
-                         && DriverStation.getAlliance().get() == Alliance.Red;
+            && DriverStation.getAlliance().get() == Alliance.Red;
         // Get currently selected command
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         // Check if is the same as the last one
@@ -158,7 +162,7 @@ public class Robot extends LoggedRobot {
                 // Grabs all paths from the auto
                 try {
                     for (PathPlannerPath path : PathPlannerAuto
-                            .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
+                        .getPathGroupFromAutoFile(m_autonomousCommand.getName())) {
                         // Adds all poses to master list
                         m_pathsToShow.addAll(path.getPathPoses());
                     }
@@ -170,7 +174,7 @@ public class Robot extends LoggedRobot {
                 if (m_alliance) {
                     for (int i = 0; i < m_pathsToShow.size(); i++) {
                         m_pathsToShow.set(i,
-                                          m_pathsToShow.get(i).rotateAround(fieldCenter, Rotation2d.k180deg));
+                            m_pathsToShow.get(i).rotateAround(fieldCenter, Rotation2d.k180deg));
                     }
                 }
                 // Displays all poses on Field2d widget
@@ -183,12 +187,12 @@ public class Robot extends LoggedRobot {
             var firstPose = m_pathsToShow.get(0);
             Logger.recordOutput("Alignment/StartPose", firstPose);
             SmartDashboard.putBoolean("Alignment/Translation",
-                                      firstPose.getTranslation().getDistance(
-                                          m_robotContainer.swerveDrivetrain.getPose().getTranslation()) <= Units
-                                      .inchesToMeters(1.5));
+                firstPose.getTranslation().getDistance(
+                    m_robotContainer.swerveDrivetrain.getPose().getTranslation()) <= Units
+                        .inchesToMeters(1.5));
             SmartDashboard.putBoolean("Alignment/Rotation",
-                                      firstPose.getRotation().minus(m_robotContainer.swerveDrivetrain.getPose().getRotation())
-                                      .getDegrees() < 1);
+                firstPose.getRotation().minus(m_robotContainer.swerveDrivetrain.getPose().getRotation())
+                    .getDegrees() < 1);
         }
     }
 
@@ -197,7 +201,8 @@ public class Robot extends LoggedRobot {
      * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
      */
     @Override
-    public void autonomousInit() {
+    public void autonomousInit()
+    {
         m_robotContainer.init();
         m_robotContainer.autonomousInit();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -215,7 +220,8 @@ public class Robot extends LoggedRobot {
 
     /** This function is called once when teleop is enabled. */
     @Override
-    public void teleopInit() {
+    public void teleopInit()
+    {
         m_robotContainer.init();
         m_robotContainer.teleopInit();
         // This makes sure that the autonomous stops running when
@@ -230,13 +236,15 @@ public class Robot extends LoggedRobot {
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
+    public void teleopPeriodic()
+    {
         m_robotContainer.teleopPeriodic();
     }
 
     /** This function is called once when test mode is enabled. */
     @Override
-    public void testInit() {
+    public void testInit()
+    {
         m_robotContainer.testInit();
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
@@ -244,7 +252,8 @@ public class Robot extends LoggedRobot {
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {
+    public void testPeriodic()
+    {
         m_robotContainer.testPeriodic();
     }
 

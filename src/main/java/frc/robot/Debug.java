@@ -13,9 +13,9 @@ public class Debug {
     public static NumberFormat fourPlaces = new DecimalFormat("0.0000");
     public static NumberFormat sixPlaces = new DecimalFormat("0.000000");
     public static NumberFormat twoPlaces = new DecimalFormat("0.00");
+    
 
-
-
+    
     public static void debugPrint(String s) {
         if (i++%10==0) {
             System.out.println(s);
@@ -28,7 +28,7 @@ public class Debug {
     }
 
 
-    public static String twoPlaces(double number) {
+     public static String twoPlaces(double number) {
         return twoPlaces.format(number);
     }
     public static String fourPlaces(double number) {
@@ -44,14 +44,14 @@ public class Debug {
     }
     public static void debugPrint(String key, String s) {
         Integer i = map.get(key);
-        if (i == null ) {
+        if (i == null ) { 
             i=0;
         }
         if (i++%10==0) {
             System.out.println(i+" " + key+ ": " + s);
         }
         map.put(key, i);
-
+        
     }
     public static void dprintln(String key, Object... args) {
         Integer i = map.get(key);

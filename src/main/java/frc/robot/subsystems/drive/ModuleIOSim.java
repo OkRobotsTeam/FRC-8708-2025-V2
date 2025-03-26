@@ -54,25 +54,27 @@ public class ModuleIOSim implements ModuleIO {
     private double turnAppliedVolts = 0.0;
 
     public ModuleIOSim(
-        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants) {
+        SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants)
+    {
         // Create drive and turn sim models
         driveSim =
             new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                DRIVE_GEARBOX, constants.DriveInertia, constants.DriveMotorGearRatio),
-            DRIVE_GEARBOX);
+                LinearSystemId.createDCMotorSystem(
+                    DRIVE_GEARBOX, constants.DriveInertia, constants.DriveMotorGearRatio),
+                DRIVE_GEARBOX);
         turnSim =
             new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                TURN_GEARBOX, constants.SteerInertia, constants.SteerMotorGearRatio),
-            TURN_GEARBOX);
+                LinearSystemId.createDCMotorSystem(
+                    TURN_GEARBOX, constants.SteerInertia, constants.SteerMotorGearRatio),
+                TURN_GEARBOX);
 
         // Enable wrapping for turn PID
         turnController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override
-    public void updateInputs(ModuleIOInputs inputs) {
+    public void updateInputs(ModuleIOInputs inputs)
+    {
         // Run closed-loop control
         if (driveClosedLoop) {
             driveAppliedVolts =
@@ -115,26 +117,30 @@ public class ModuleIOSim implements ModuleIO {
     }
 
     @Override
-    public void setDriveOpenLoop(double output) {
+    public void setDriveOpenLoop(double output)
+    {
         driveClosedLoop = false;
         driveAppliedVolts = output;
     }
 
     @Override
-    public void setTurnOpenLoop(double output) {
+    public void setTurnOpenLoop(double output)
+    {
         turnClosedLoop = false;
         turnAppliedVolts = output;
     }
 
     @Override
-    public void setDriveVelocity(double velocityRadPerSec) {
+    public void setDriveVelocity(double velocityRadPerSec)
+    {
         driveClosedLoop = true;
         driveFFVolts = DRIVE_KS * Math.signum(velocityRadPerSec) + DRIVE_KV * velocityRadPerSec;
         driveController.setSetpoint(velocityRadPerSec);
     }
 
     @Override
-    public void setTurnPosition(Rotation2d rotation) {
+    public void setTurnPosition(Rotation2d rotation)
+    {
         turnClosedLoop = true;
         turnController.setSetpoint(rotation.getRadians());
     }

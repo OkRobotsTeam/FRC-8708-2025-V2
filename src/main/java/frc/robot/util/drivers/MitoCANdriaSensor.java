@@ -9,19 +9,20 @@ import au.grapplerobotics.MitoCANdria;
 /** Add your docs here. */
 public class MitoCANdriaSensor {
 
-    public MitoCANdriaSensor(int ID) {
+    public MitoCANdriaSensor(int ID)
+    {
         try (MitoCANdria mito = new MitoCANdria(ID)) {
             // Get and print USB1 current
             mito.getChannelCurrent(MitoCANdria.MITOCANDRIA_CHANNEL_USB1)
-            .ifPresentOrElse(
-                current -> System.out.println("USB1 current: " + current + " A"),
-                () -> System.out.println("Couldn't get USB1 current"));
+                .ifPresentOrElse(
+                    current -> System.out.println("USB1 current: " + current + " A"),
+                    () -> System.out.println("Couldn't get USB1 current"));
 
             // Get and print 5VA voltage
             mito.getChannelVoltage(MitoCANdria.MITOCANDRIA_CHANNEL_5VA)
-            .ifPresentOrElse(
-                voltage -> System.out.println("5VA voltage: " + voltage + " V"),
-                () -> System.out.println("Couldn't get 5VA voltage"));
+                .ifPresentOrElse(
+                    voltage -> System.out.println("5VA voltage: " + voltage + " V"),
+                    () -> System.out.println("Couldn't get 5VA voltage"));
 
             // Enable USB2 channel
             mito.setChannelEnabled(MitoCANdria.MITOCANDRIA_CHANNEL_USB2, true);
@@ -33,15 +34,15 @@ public class MitoCANdriaSensor {
 
             // Get and print ADJ channel setpoint
             mito.getChannelVoltageSetpoint(MitoCANdria.MITOCANDRIA_CHANNEL_ADJ)
-            .ifPresentOrElse(
-                setpoint -> System.out.println("ADJ channel setpoint: " + setpoint + " V"),
-                () -> System.out.println("Couldn't get ADJ channel setpoint"));
+                .ifPresentOrElse(
+                    setpoint -> System.out.println("ADJ channel setpoint: " + setpoint + " V"),
+                    () -> System.out.println("Couldn't get ADJ channel setpoint"));
 
             // Check if 5VB channel is enabled
             mito.getChannelEnabled(MitoCANdria.MITOCANDRIA_CHANNEL_5VB)
-            .ifPresentOrElse(
-                enabled -> System.out.println("5VB channel enabled: " + (enabled == 1)),
-                () -> System.out.println("Couldn't check if 5VB channel is enabled"));
+                .ifPresentOrElse(
+                    enabled -> System.out.println("5VB channel enabled: " + (enabled == 1)),
+                    () -> System.out.println("Couldn't check if 5VB channel is enabled"));
 
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
