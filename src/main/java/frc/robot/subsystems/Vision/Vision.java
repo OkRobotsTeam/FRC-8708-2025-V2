@@ -39,8 +39,7 @@ public class Vision extends SubsystemBase {
     private boolean seesThisTarget = false;
     public boolean visionEnabled = true;
 
-    public Vision(VisionConsumer consumer, VisionIO... io)
-    {
+    public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
         this.io = io;
 
@@ -53,8 +52,7 @@ public class Vision extends SubsystemBase {
         // Initialize disconnected alerts
         this.disconnectedAlerts = new Alert[io.length];
         for (int i = 0; i < inputs.length; i++) {
-            disconnectedAlerts[i] =
-                new Alert(
+            disconnectedAlerts[i] = new Alert(
                     "Vision camera " + i + " is disconnected.",
                     AlertType.kWarning);
         }
@@ -65,8 +63,7 @@ public class Vision extends SubsystemBase {
      *
      * @param cameraIndex The index of the camera to use.
      */
-    public Rotation2d getTargetAngleX(int cameraIndex)
-    {
+    public Rotation2d getTargetAngleX(int cameraIndex) {
         return inputs[cameraIndex].latestTargetObservation.tx();
     }
 
@@ -140,19 +137,18 @@ public class Vision extends SubsystemBase {
                 // Add pose to log
                 robotPoses.add(observation.pose());
                 if (rejectPose) {
-//                    System.out.println("Rejected vision observation: " + rejectionReason);
+                    // System.out.println("Rejected vision observation: " + rejectionReason);
                     robotPosesRejected.add(observation.pose());
                 }
 
                 // Skip if rejected
                 if (rejectPose) {
-//                    System.out.println("Rejected pose " + observation.pose());
+                    // System.out.println("Rejected pose " + observation.pose());
                     continue;
                 }
 
                 // Calculate standard deviations
-                double stdDevFactor =
-                        Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+                double stdDevFactor = Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
                 double linearStdDev = linearStdDevBaseline * stdDevFactor;
                 double angularStdDev = angularStdDevBaseline * stdDevFactor;
                 if (cameraIndex < cameraStdDevFactors.length) {
@@ -160,46 +156,49 @@ public class Vision extends SubsystemBase {
                     angularStdDev *= cameraStdDevFactors[cameraIndex];
                 }
 
-//                    Debug.dprintln("vision", "X: ", observation.pose().getTranslation().getX(), " Y: ", observation.pose().getTranslation().getY(), " Z: ", observation.pose().getTranslation().getX(),
-//                            " Roll: ", observation.pose().getRotation().getX() * (180 / Math.PI), " Pitch: ", observation.pose().getRotation().getY() * (180 / Math.PI), " Yaw: ", observation.pose().getRotation().getZ() * (180 / Math.PI));
+                // Debug.dprintln("vision", "X: ", observation.pose().getTranslation().getX(), " Y: ",
+                // observation.pose().getTranslation().getY(), " Z: ", observation.pose().getTranslation().getX(),
+                // " Roll: ", observation.pose().getRotation().getX() * (180 / Math.PI), " Pitch: ",
+                // observation.pose().getRotation().getY() * (180 / Math.PI), " Yaw: ", observation.pose().getRotation().getZ() *
+                // (180 / Math.PI));
 
-                    // Send vision observation
-                    consumer.accept(
-                            observation.pose().toPose2d(),
-                            observation.timestamp(),
-                            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
-                }
-
-                // Log camera data
-                Logger.recordOutput(
-                        "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
-                        tagPoses.toArray(new Pose3d[tagPoses.size()]));
-                Logger.recordOutput(
-                        "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
-                        robotPoses.toArray(new Pose3d[robotPoses.size()]));
-                Logger.recordOutput(
-                        "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
-                        robotPosesAccepted.toArray(new Pose3d[robotPosesAccepted.size()]));
-                Logger.recordOutput(
-                        "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
-                        robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
-                allTagPoses.addAll(tagPoses);
-                allRobotPoses.addAll(robotPoses);
-                allRobotPosesAccepted.addAll(robotPosesAccepted);
-                allRobotPosesRejected.addAll(robotPosesRejected);
+                // Send vision observation
+                consumer.accept(
+                        observation.pose().toPose2d(),
+                        observation.timestamp(),
+                        VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
 
-            // Log summary data
+            // Log camera data
             Logger.recordOutput(
-                    "Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
+                    tagPoses.toArray(new Pose3d[tagPoses.size()]));
             Logger.recordOutput(
-                    "Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
+                    robotPoses.toArray(new Pose3d[robotPoses.size()]));
             Logger.recordOutput(
-                    "Vision/Summary/RobotPosesAccepted",
-                    allRobotPosesAccepted.toArray(new Pose3d[allRobotPosesAccepted.size()]));
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
+                    robotPosesAccepted.toArray(new Pose3d[robotPosesAccepted.size()]));
             Logger.recordOutput(
-                    "Vision/Summary/RobotPosesRejected",
-                    allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+                    "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
+                    robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
+            allTagPoses.addAll(tagPoses);
+            allRobotPoses.addAll(robotPoses);
+            allRobotPosesAccepted.addAll(robotPosesAccepted);
+            allRobotPosesRejected.addAll(robotPosesRejected);
+        }
+
+        // Log summary data
+        Logger.recordOutput(
+                "Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
+        Logger.recordOutput(
+                "Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
+        Logger.recordOutput(
+                "Vision/Summary/RobotPosesAccepted",
+                allRobotPosesAccepted.toArray(new Pose3d[allRobotPosesAccepted.size()]));
+        Logger.recordOutput(
+                "Vision/Summary/RobotPosesRejected",
+                allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
     }
 
     @FunctionalInterface

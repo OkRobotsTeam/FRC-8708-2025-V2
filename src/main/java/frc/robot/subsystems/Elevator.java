@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
 import frc.robot.MathUtils;
 
-
 import static frc.robot.Constants.Elevator.*;
-
 
 public class Elevator extends SubsystemBase {
     private final PWMSparkMax motor1 = new PWMSparkMax(Ports.MOTOR_1);
@@ -29,7 +27,7 @@ public class Elevator extends SubsystemBase {
         encoder.reset();
         // Configures the encoder to return a distance of 1 for every 8192 pulses (one revolution of the REV Through-bore)
         // Also changes the units of getRate
-        encoder.setDistancePerPulse(20.0/2462.0);
+        encoder.setDistancePerPulse(20.0 / 2462.0);
         elevatorPID.reset(getElevatorPosition());
         transitionToState(currentState);
     }
@@ -99,7 +97,7 @@ public class Elevator extends SubsystemBase {
 
     public void manualAdjust(double amount) {
         double currentTime = getTime();
-        double deltaTime =  currentTime - lastTime;
+        double deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         manualAdjustAmount = manualAdjustAmount - amount * deltaTime;
         updateManualAdjust();
@@ -116,17 +114,17 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command waitForElevator() {
-        return Commands.waitUntil( ()-> {
-//            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+        return Commands.waitUntil(() -> {
+            // Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ",
+            // Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
             return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 5.0;
         });
     }
 
-
-
     public Command waitForElevatorPrecise() {
-        return Commands.waitUntil( ()-> {
-//            Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ", Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
+        return Commands.waitUntil(() -> {
+            // Debug.println("Checking Elevator: P: ", getElevatorPosition(), " SP:", elevatorPID.getGoal().position, " Diff: ",
+            // Math.abs(getElevatorPosition() - elevatorPID.getGoal().position));
             return Math.abs(getElevatorPosition() - elevatorPID.getGoal().position) < 1.0;
         });
     }

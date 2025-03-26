@@ -6,10 +6,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Delivery.*;
 
-
 public class Delivery extends SubsystemBase {
     private final TalonFX deliveryMotor = new TalonFX(Ports.CONVEYOR_MOTOR_ID);
-
 
     @SuppressWarnings("removal")
     public Delivery() {
@@ -20,7 +18,6 @@ public class Delivery extends SubsystemBase {
         stopDelivery();
     }
 
-
     public void stopDelivery() {
         setDeliveryMotor(0.0);
     }
@@ -28,6 +25,5 @@ public class Delivery extends SubsystemBase {
     public void setDeliveryMotor(double power) {
         deliveryMotor.set(power);
     }
-
 
 }

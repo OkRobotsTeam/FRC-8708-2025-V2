@@ -61,7 +61,7 @@
     null
   ],
   "editor.formatOnSave": true,
-  "java.format.settings.url": "./eclipse-java-google-style.xml",
+  "java.format.settings.url": "",
   "[java]": {
     "editor.detectIndentation": false
   },

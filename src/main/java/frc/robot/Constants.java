@@ -13,19 +13,17 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 public class Constants {
 
-
     public static class DriveConstants {
 
     }
+
     public static class SwerveDrivetrain {
         // Physical Attributes
         public static final double WHEELBASE_IN_METERS = 0.56515;
-        public static final double DRIVEBASE_RADIUS_IN_METERS =
-            (WHEELBASE_IN_METERS / 2) * Math.sqrt(2);
+        public static final double DRIVEBASE_RADIUS_IN_METERS = (WHEELBASE_IN_METERS / 2) * Math.sqrt(2);
         public static final double WHEEL_RADIUS_IN_METERS = 0.044;
         public static final double DRIVE_GEAR_RATIO = (1.0 / 5.60);
-        public static final double WHEEL_CIRCUMFERENCE_IN_METERS =
-            WHEEL_RADIUS_IN_METERS * (Math.PI * 2);
+        public static final double WHEEL_CIRCUMFERENCE_IN_METERS = WHEEL_RADIUS_IN_METERS * (Math.PI * 2);
         public static final boolean TURNING_MOTORS_INVERTED = true;
         public static final boolean DRIVE_MOTORS_INVERTED = false;
 
@@ -44,16 +42,17 @@ public class Constants {
                                                                                                  // to
                                                                                                  // full
                                                                                                  // speed
-        public static final double TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND =
-            Math.toRadians(360); // 1 rotation per second
-        public static final double TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED =
-            Math.toRadians(720); // one half second to full turn speed
+        public static final double TURNING_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND = Math.toRadians(360); // 1 rotation per
+                                                                                                             // second
+        public static final double TURNING_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.toRadians(720); // one half
+                                                                                                                         // second
+                                                                                                                         // to full
+                                                                                                                         // turn
+                                                                                                                         // speed
 
         // Wheel rotation speed and acceleration limiters
-        public static final double WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED =
-            Math.PI * 2;
-        public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED =
-            Math.PI * 200;
+        public static final double WHEEL_MAX_ANGULAR_VELOCITY_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 2;
+        public static final double WHEEL_MAX_ANGULAR_ACCELERATION_IN_RADIANS_PER_SECOND_SQUARED = Math.PI * 200;
 
         public static class Ports {
             public static final int BACK_LEFT_DRIVE_MOTOR = 13;
@@ -71,7 +70,6 @@ public class Constants {
             public static final int BACK_RIGHT_DRIVE_MOTOR = 12;
             public static final int BACK_RIGHT_ROTATION_MOTOR = 22;
             public static final int BACK_RIGHT_ROTATION_ENCODER = 32;
-
 
             // public static final int BACK_LEFT_DRIVE_MOTOR = 11;
             // public static final int BACK_LEFT_ROTATION_MOTOR = 21;
@@ -92,10 +90,10 @@ public class Constants {
     }
 
     public static class Elevator {
-        public static double[] States = {0, 13, 22, 38, 62};
+        public static double[] States = { 0, 13, 22, 38, 62 };
 
-        public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE =
-            new TrapezoidProfile.Constraints(300.0, 100.0);
+        public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE = new TrapezoidProfile.Constraints(300.0,
+                100.0);
 
         public static final double KG = 0.15;
         public static final double KP = 0.1;
@@ -165,12 +163,11 @@ public class Constants {
         }
     }
 
-//    public static final class VisionSubsystem {
-//        public static final String ALIGNMENT_CAMERA_NAME_CLOSE = "ALIGNMENT_CAMERA_CLOSE";
-//        public static final Transform3d CAMERA_TO_ROBOT_TRANSFORM =
-//            new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
-//    }
-
+    // public static final class VisionSubsystem {
+    // public static final String ALIGNMENT_CAMERA_NAME_CLOSE = "ALIGNMENT_CAMERA_CLOSE";
+    // public static final Transform3d CAMERA_TO_ROBOT_TRANSFORM =
+    // new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0));
+    // }
 
     public static double loopPeriodSecs = 0.02;
 
@@ -179,8 +176,7 @@ public class Constants {
 
     private static RobotType robotType = RobotType.BAJA;
 
-    public static RobotType getRobot()
-    {
+    public static RobotType getRobot() {
         return robotType;
     }
 
@@ -207,5 +203,3 @@ public class Constants {
         BAJA
     }
 }
-
-

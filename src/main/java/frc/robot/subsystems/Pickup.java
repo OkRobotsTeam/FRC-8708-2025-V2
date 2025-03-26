@@ -14,9 +14,9 @@ import java.util.function.BooleanSupplier;
 
 import static frc.robot.Constants.Pickup.*;
 
-
 public class Pickup extends SubsystemBase {
-//    private final SparkMax pickupMotor = new SparkMax(Constants.Pickup.Ports.DELIVERY_MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
+    // private final SparkMax pickupMotor = new SparkMax(Constants.Pickup.Ports.DELIVERY_MOTOR_ID,
+    // SparkLowLevel.MotorType.kBrushless);
     private final TalonFX pickupMotorKraken = new TalonFX(Ports.DELIVERY_MOTOR_ID);
     private final TalonFX rotationMotor = new TalonFX(Ports.ROTATION_MOTOR);
     public final PIDController rotationPID = new PIDController(KP, KI, KD);
@@ -30,14 +30,15 @@ public class Pickup extends SubsystemBase {
         double pidOutput = rotationPID.calculate(rotationMotor.getPosition().getValueAsDouble());
         rotationMotor.set(pidOutput);
     }
-    
+
     public Pickup() {
         rotationPID.reset();
         rotationMotor.setNeutralMode(NeutralModeValue.Brake);
-//        SparkMaxConfig pickupMotor1Config = new SparkMaxConfig();
-//        pickupMotor1Config.inverted(MOTOR_1_INVERTED);
-//        pickupMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
-//        pickupMotor.configure(pickupMotor1Config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+        // SparkMaxConfig pickupMotor1Config = new SparkMaxConfig();
+        // pickupMotor1Config.inverted(MOTOR_1_INVERTED);
+        // pickupMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
+        // pickupMotor.configure(pickupMotor1Config, SparkBase.ResetMode.kNoResetSafeParameters,
+        // SparkBase.PersistMode.kPersistParameters);
         stopIntake();
     }
 
@@ -66,7 +67,7 @@ public class Pickup extends SubsystemBase {
     }
 
     public void setIntakeMotors(double power) {
-//        pickupMotor.set(power);
+        // pickupMotor.set(power);
         pickupMotorKraken.set(power);
     }
 

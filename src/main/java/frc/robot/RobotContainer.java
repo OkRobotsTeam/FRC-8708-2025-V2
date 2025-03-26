@@ -45,7 +45,6 @@ public class RobotContainer {
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
 
-
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> m_autoChooser;
 
@@ -63,14 +62,12 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        swerveDrivetrain =
-                new Drive(
-                        new GyroIOPigeon2(),
-                        new ModuleIOTalonFX(TunerConstants.FrontLeft),
-                        new ModuleIOTalonFX(TunerConstants.FrontRight),
-                        new ModuleIOTalonFX(TunerConstants.BackLeft),
-                        new ModuleIOTalonFX(TunerConstants.BackRight));
-
+        swerveDrivetrain = new Drive(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
 
         vision = new Vision(swerveDrivetrain, new VisionIOPhotonVision(alignmentCameraName, robotToAlignmentCamera));
 
@@ -78,8 +75,7 @@ public class RobotContainer {
         registerNamedCommands();
 
         // Set up auto routines
-        m_autoChooser =
-                new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        m_autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
         m_autoChooser.addOption(
@@ -114,11 +110,10 @@ public class RobotContainer {
     }
 
     public void teleopInit() {
-        delivery.setDefaultCommand(Commands.run(()-> {
-            if(Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.55 ) {
+        delivery.setDefaultCommand(Commands.run(() -> {
+            if (Math.abs(manipulatorController.getHID().getRightTriggerAxis()) > 0.55) {
                 delivery.setDeliveryMotor(
-                        (-manipulatorController.getHID().getRightTriggerAxis() / 4.0)
-                );
+                        (-manipulatorController.getHID().getRightTriggerAxis() / 4.0));
             }
         }, delivery));
     }
@@ -133,11 +128,10 @@ public class RobotContainer {
             manualAdjustAmount = 0;
         }
 
-
         elevator.manualAdjust(manualAdjustAmount * 6);
     }
 
-    public void testInit(){
+    public void testInit() {
         teleopInit();
         swerveDrivetrain.setSpeed(0.1);
     }
@@ -155,8 +149,7 @@ public class RobotContainer {
                 () -> -driveController.getRightX(),
                 () -> -driveController.getLeftTriggerAxis(),
                 () -> elevator.getElevatorPosition(),
-                driveController.x()
-        );
+                driveController.x());
     }
 
     private Command joystickApproach(Supplier<Pose2d> approachPose) {
@@ -179,20 +172,25 @@ public class RobotContainer {
         driveController.rightBumper()
                 .whileTrue(
                         joystickApproach(
-                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.RIGHT)));
+                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(),
+                                        FieldConstants.ReefSide.RIGHT)));
 
         // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
         driveController.leftBumper()
                 .whileTrue(
                         joystickApproach(
-                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(), FieldConstants.ReefSide.LEFT)));
-//
+                                () -> FieldConstants.getNearestReefBranch(swerveDrivetrain.getPose(),
+                                        FieldConstants.ReefSide.LEFT)));
+        //
         manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
         manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
 
-        manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
-        manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate()).onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
-        manipulatorController.leftBumper().and(manipulatorController.rightBumper()).onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
+        manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+        manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+        manipulatorController.leftBumper().and(manipulatorController.rightBumper())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
         manipulatorController.leftBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
         manipulatorController.rightBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
 
@@ -212,13 +210,10 @@ public class RobotContainer {
         manipulatorController.x().onTrue(Commands.runOnce(pickup::runIntakeIn));
         manipulatorController.x().onFalse(Commands.runOnce(pickup::stopIntake));
 
-
         driveController.rightTrigger().onTrue(Commands.runOnce(
                 () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
                         Commands.waitSeconds(0.5).andThen(
-                                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
-                        )
-        ));
+                                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0))));
 
     }
 
@@ -241,7 +236,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("algaeStop", new InstantCommand(() -> pickup.setIntakeMotors(0)));
         NamedCommands.registerCommand("waitForElevator", elevator.waitForElevator().withTimeout(4.0));
         NamedCommands.registerCommand("waitForElevatorPrecise", elevator.waitForElevatorPrecise().withTimeout(4.0));
-//        NamedCommands.registerCommand("wait",  new InstantCommand(() -> TimeUnit.wait(5000)));
+        // NamedCommands.registerCommand("wait", new InstantCommand(() -> TimeUnit.wait(5000)));
     }
 
     /**
