@@ -41,23 +41,11 @@ public class VisionConstants {
     }
 
     // Camera names, must match names configured on coprocessor
-    public static String alignmentCameraName = "alignment_camera";
-    // public static String frontCameraName = "front_camera";
+    public static String centerAlignmentCameraName = "center_alignment_camera";
+    public static String leftAlignmentCameraName = "left_alignment_camera";
+    public static String rightAlignmentCameraName = "right_alignment_camera";
 
-    // Robot to camera transforms
-    // public static Transform3d robotToAlignmentCamera =
-    // new Transform3d(
-    // Units.inchesToMeters(5), // +Forwards/ -Backwards 3.5
-    // Units.inchesToMeters(12), // +Right / -Left 11.5
-    // Units.inchesToMeters(31.25), // +Up / -Down
-    // new Rotation3d(
-    // Units.degreesToRadians(-37.5), // 45
-    // Units.degreesToRadians(180),
-    // Units.degreesToRadians(-90)) // -90
-    //
-    // );
-
-    public static Transform3d robotToAlignmentCamera = new Transform3d(
+    public static Transform3d robotToCenterAlignmentCamera = new Transform3d(
             Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
             Units.inchesToMeters(-14), // +Right / -Left 11.5
             Units.inchesToMeters(12), // +Up / -Down
@@ -65,20 +53,27 @@ public class VisionConstants {
                     Units.degreesToRadians(0),
                     Units.degreesToRadians(0),
                     Units.degreesToRadians(-90))
-
     );
 
-    // public static Transform3d robotToFrontCamera =
-    // new Transform3d(
-    // Units.inchesToMeters(0), // +Forwards/ -Backwards 3.5
-    // Units.inchesToMeters(0), // +Right / -Left 11.5
-    // Units.inchesToMeters(0), // +Up / -Down
-    // new Rotation3d(
-    // Units.degreesToRadians(0), // 45
-    // Units.degreesToRadians(0),
-    // Units.degreesToRadians(0)) // -90
-    //
-    // );
+    public static Transform3d robotToLeftAlignmentCamera = new Transform3d(
+            Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
+            Units.inchesToMeters(-14), // +Right / -Left 11.5
+            Units.inchesToMeters(12), // +Up / -Down
+            new Rotation3d(
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(-90))
+    );
+
+    public static Transform3d robotToRightAlignmentCamera = new Transform3d(
+            Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
+            Units.inchesToMeters(-14), // +Right / -Left 11.5
+            Units.inchesToMeters(12), // +Up / -Down
+            new Rotation3d(
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(0),
+                    Units.degreesToRadians(-90))
+    );
 
     // Basic filtering thresholds
     public static double maxAmbiguity = 0.3;
@@ -94,6 +89,7 @@ public class VisionConstants {
     public static double[] cameraStdDevFactors = new double[] {
             1.0,
             1.0,
+            1.0
     };
 
     // public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);

@@ -70,7 +70,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        vision = new Vision(swerveDrivetrain, new VisionIOPhotonVision(alignmentCameraName, robotToAlignmentCamera));
+        vision = new Vision(swerveDrivetrain, new VisionIOPhotonVision(centerAlignmentCameraName, robotToCenterAlignmentCamera));
 
         // Logic Triggers
         registerNamedCommands();
