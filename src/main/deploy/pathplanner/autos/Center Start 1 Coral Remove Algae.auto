@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "algaeIn"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Copy of Center Start to Front Right"

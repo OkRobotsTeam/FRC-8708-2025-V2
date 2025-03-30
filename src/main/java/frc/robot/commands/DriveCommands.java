@@ -213,7 +213,7 @@ public class DriveCommands {
 
         TuneableProfiledPID alignController = new TuneableProfiledPID(
                 "alignController",
-                1,
+                0.3,
                 0.0,
                 0,
                 2,
@@ -222,13 +222,12 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-                        () -> {
-                            currentDriveMode = DriveMode.dmApproach;
-                            // Name constants
-                            Translation2d currentTranslation = drive.getPose().getTranslation();
-                            Translation2d approachTranslation = approachSupplier.get().getTranslation().plus(
-                                    new Translation2d(Units.inchesToMeters(9.25), Rotation2d.fromDegrees(90).plus(approachSupplier.get().getRotation()))
-                            );
+                () -> {
+                    currentDriveMode = DriveMode.dmApproach;
+                    // Name constants
+                    Translation2d currentTranslation = drive.getPose().getTranslation();
+                    Translation2d approachTranslation = approachSupplier.get().getTranslation();
+//                    Translation2d approachTranslation = getNe;
 
                             double distanceToApproach = currentTranslation.getDistance(approachTranslation);
 
@@ -243,10 +242,17 @@ public class DriveCommands {
                             double distanceToGoal =
                                     Math.hypot(robotToGoal.getX(), robotToGoal.getY());
 
-                            // Calculate lateral linear velocity
-                            Translation2d offsetVector =
-                                    new Translation2d(alignController.calculate(distanceToGoal), 0)
-                                            .rotateBy(robotToGoal.getAngle());
+//                    if (Math.abs(distanceToGoal - Units.inchesToMeters(9.25)) <  Units.inchesToMeters(1)) {
+//                        distanceToGoal = Units.inchesToMeters(9.25);
+//                    }
+
+                    SmartDashboard.putNumber("Distance To Goal", distanceToGoal);
+                    SmartDashboard.putNumber("Distance To Approach", distanceToApproach);
+
+                    // Calculate lateral linear velocity
+                    Translation2d offsetVector = new Translation2d(
+                            alignController.calculate(distanceToGoal), 0)
+                            .rotateBy(robotToGoal.getAngle());
 
                             Logger.recordOutput("AlignDebug/Current", distanceToGoal);
 

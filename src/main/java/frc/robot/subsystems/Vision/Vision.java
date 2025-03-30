@@ -25,9 +25,13 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import frc.robot.Debug;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -38,6 +42,8 @@ public class Vision extends SubsystemBase {
     public boolean visionHasTarget = false;
     private boolean seesThisTarget = false;
     public boolean visionEnabled = true;
+    ArrayList<Pose3d> cameraPoses = new ArrayList<>(10);
+    ArrayList<Long> sampleTimes = new ArrayList<>();
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -56,6 +62,12 @@ public class Vision extends SubsystemBase {
                     "Vision camera " + i + " is disconnected.",
                     AlertType.kWarning);
         }
+        for (int i=1; i<=3; i++) {
+            cameraPoses.add(0, new Pose3d());
+            sampleTimes.add(0, (long) 0);
+        }
+
+
     }
 
     /**
@@ -83,6 +95,8 @@ public class Vision extends SubsystemBase {
         List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
         List<Pose3d> allRobotPosesRejected = new LinkedList<>();
 
+
+
         // Loop over cameras
         for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
             // Update disconnected alert
@@ -93,7 +107,6 @@ public class Vision extends SubsystemBase {
             List<Pose3d> robotPoses = new LinkedList<>();
             List<Pose3d> robotPosesAccepted = new LinkedList<>();
             List<Pose3d> robotPosesRejected = new LinkedList<>();
-
             // Add tag poses
             for (int tagId : inputs[cameraIndex].tagIds) {
                 var tagPose = aprilTagLayout.getTagPose(tagId);
@@ -111,6 +124,7 @@ public class Vision extends SubsystemBase {
             } else {
                 visionHasTarget = false;
             }
+
 
             // Loop over pose observations
             for (var observation : inputs[cameraIndex].poseObservations) {
@@ -137,13 +151,12 @@ public class Vision extends SubsystemBase {
                 // Add pose to log
                 robotPoses.add(observation.pose());
                 if (rejectPose) {
-                    // System.out.println("Rejected vision observation: " + rejectionReason);
+                     System.out.println("Rejected vision observation: " + rejectionReason);
                     robotPosesRejected.add(observation.pose());
                 }
 
                 // Skip if rejected
                 if (rejectPose) {
-                    // System.out.println("Rejected pose " + observation.pose());
                     continue;
                 }
 
@@ -154,6 +167,11 @@ public class Vision extends SubsystemBase {
                 if (cameraIndex < cameraStdDevFactors.length) {
                     linearStdDev *= cameraStdDevFactors[cameraIndex];
                     angularStdDev *= cameraStdDevFactors[cameraIndex];
+                }
+
+                if (cameraPoses.size() > cameraIndex) {
+                    cameraPoses.set(cameraIndex, observation.pose());
+                    sampleTimes.set(cameraIndex,System.currentTimeMillis());
                 }
 
                 // Debug.dprintln("vision", "X: ", observation.pose().getTranslation().getX(), " Y: ",
@@ -168,6 +186,8 @@ public class Vision extends SubsystemBase {
                         observation.timestamp(),
                         VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
+
+
 
             // Log camera data
             Logger.recordOutput(
@@ -188,6 +208,15 @@ public class Vision extends SubsystemBase {
             allRobotPosesRejected.addAll(robotPosesRejected);
         }
 
+
+//        if (( System.currentTimeMillis() - sampleTimes.get(0) ) < 100 ) {
+//            Pose3d center = cameraPoses.get(0);
+//            Pose3d left = cameraPoses.get(1);
+//            Pose3d right = cameraPoses.get(2);
+//            Debug.dprintln(
+//                    "v", "Left ", "X: ", left.getX() - center.getX(), " Y: ", left.getY() - center.getY(),
+//                    "  Right ", "X: ", right.getX() - center.getX(), " Y: ", right.getY() - center.getY());
+//        }
         // Log summary data
         Logger.recordOutput(
                 "Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[allTagPoses.size()]));

@@ -4,8 +4,10 @@
   "holonomicMode": true,
   "pathFolders": [
     "Center Start 1 Coral 2 Algae",
-    "Left Start 3 Coral",
     "Center Start 1 Coral Remove Algae",
+    "Copy",
+    "Left Start 3 Coral",
+    "Right Start 3 Coral",
     "Test Paths"
   ],
   "autoFolders": [

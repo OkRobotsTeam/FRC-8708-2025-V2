@@ -14,6 +14,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
 
@@ -21,10 +22,10 @@ public class ReanchoringPoseEstimator {
 
     /* A simple pair of poses and the times those poses were recorded */
     private class OdometryHistoryEntry {
-        public long time;
+        public double time;
         public Pose2d pose;
 
-        OdometryHistoryEntry(long time, Pose2d pose) {
+        OdometryHistoryEntry(double time, Pose2d pose) {
             this.time = time;
             this.pose = pose;
         }
@@ -35,7 +36,7 @@ public class ReanchoringPoseEstimator {
      * thinks the robot is combined with a matching odometry history entry and speed difference.
      * 
      * Finding the matching odometry history entry requires looking through the odometry history for a measurement that
-     * was taken at aproximately the same time as the snapshot was taken that the vision positioning is based on.
+     * was taken at approximately the same time as the snapshot was taken that the vision positioning is based on.
      * 
      * The third entry in the data structure is a speed difference. This is calculated by generating the speed indicated by vision
      * (comparing the positions indicated by the last two vision entries) and the speed indicated by odometry and differencing those
@@ -64,14 +65,14 @@ public class ReanchoringPoseEstimator {
     ArrayList<VisionHistoryEntry> visionHistory = new ArrayList<VisionHistoryEntry>();
 
     public ReanchoringPoseEstimator() {
-        odometryHistory.add(0, new OdometryHistoryEntry(System.currentTimeMillis(), new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
+        odometryHistory.add(0, new OdometryHistoryEntry(Timer.getFPGATimestamp(), new Pose2d(0, 0, Rotation2d.fromDegrees(0))));
         visionHistory.add(0, new VisionHistoryEntry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), odometryHistory.get(0), 0));
     }
 
     public ReanchoringPoseEstimator(SwerveDriveKinematics kinematics, Rotation2d gyroAngle, SwerveModulePosition[] modulePositions,
             Pose2d initialPose) {
         odometry = new SwerveDriveOdometry(kinematics, gyroAngle, modulePositions, initialPose);
-        odometryHistory.add(0, new OdometryHistoryEntry(System.currentTimeMillis(), new Pose2d(0, 0, gyroAngle)));
+        odometryHistory.add(0, new OdometryHistoryEntry(Timer.getFPGATimestamp(), new Pose2d(0, 0, gyroAngle)));
         visionHistory.add(0, new VisionHistoryEntry(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), odometryHistory.get(0), 0));
     }
 
@@ -81,7 +82,7 @@ public class ReanchoringPoseEstimator {
     }
 
     public void newOdometryEntry(Pose2d pose) {
-        final OdometryHistoryEntry newEntry = new OdometryHistoryEntry(System.currentTimeMillis(), pose);
+        final OdometryHistoryEntry newEntry = new OdometryHistoryEntry(Timer.getFPGATimestamp(), pose);
         odometryHistory.add(0, newEntry);
         if (odometryHistory.size() > 100) {
             odometryHistory.remove(odometryHistory.size() - 1);
@@ -90,10 +91,12 @@ public class ReanchoringPoseEstimator {
 
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
-        newVisionEntry(visionRobotPoseMeters, (long) (timestampSeconds * 1000));
+        //Debug.dprintln("Vision Times:", "FPGATime:", Timer.getFPGATimestamp(), "Vision:", timestampSeconds);
+        newVisionEntry(visionRobotPoseMeters, timestampSeconds);
     }
 
-    public void newVisionEntry(Pose2d visionPose, long visionTime) {
+    public void newVisionEntry(Pose2d visionPose, double visionTime) {
+//        Debug.println("Vision entry: ", visionTime, " System time: ", System.currentTimeMillis());
         int matching = 0;
         for (int i = 0; i < odometryHistory.size(); i++) {
             if (odometryHistory.get(i).time <= visionTime) {
@@ -115,7 +118,7 @@ public class ReanchoringPoseEstimator {
             for (int i = 0; i < 10; i++) {
                 totalDiff += visionHistory.get(i).speedDiff;
             }
-            Debug.println("TotalDiff ", totalDiff);
+//            Debug.println("TotalDiff ", totalDiff);
             if (totalDiff < 50) {
                 anchorOdometry = matchingOdometry.pose;
                 anchorVision = visionPose;
@@ -139,8 +142,8 @@ public class ReanchoringPoseEstimator {
         double odometryRotation = Math.abs(
                 thisOdometry.pose.getRotation().minus(lastOdometry.pose.getRotation()).getRadians());
         double odometryCombined = (odometryMovement + odometryRotation * 5) * 100;
-        Debug.println("Vision Movement: ", visionCombined, " Odometry Movement: ",
-                odometryCombined);
+//        Debug.println("Vision Movement: ", visionCombined, " Odometry Movement: ",
+//                odometryCombined);
         return (Math.abs(visionCombined - odometryCombined));
     }
 

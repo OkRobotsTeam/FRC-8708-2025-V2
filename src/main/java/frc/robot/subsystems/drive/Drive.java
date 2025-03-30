@@ -105,9 +105,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                     new SwerveModulePosition(),
                     new SwerveModulePosition()
             };
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-            lastModulePositions,
-            new Pose2d());
+    //private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final ReanchoringPoseEstimator poseEstimator = new ReanchoringPoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
     private double speed;
 
     public Drive(

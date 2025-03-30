@@ -45,6 +45,9 @@ public class Pickup extends SubsystemBase {
     public void lowerPickup() {
         rotationPID.setSetpoint(LOWERED_SETPOINT);
     }
+    public void foldPickup() {
+        rotationPID.setSetpoint(0.0);
+    }
 
     public void raisePickup() {
         rotationPID.setSetpoint(RAISED_SETPOINT);

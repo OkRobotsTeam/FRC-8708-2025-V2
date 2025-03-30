@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.7,
-        "y": 7.5
+        "x": 5.180349864130435,
+        "y": 5.828286345108695
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.832250000000001,
-        "y": 7.431749999999999
+        "x": 5.038974864130435,
+        "y": 5.594286345108696
       },
       "isLocked": false,
-      "linkedName": "LeftStart"
+      "linkedName": "FrontLeftLeftBack"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 5.327539062499999
       },
       "prevControl": {
-        "x": 5.514393342391305,
-        "y": 6.502414062499998
+        "x": 4.997768342391304,
+        "y": 5.557414062499998
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "raiseElevatorTo4",
-      "waypointRelativePos": 0.8959839357429673,
+      "waypointRelativePos": 0.846184738955823,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -60,7 +60,7 @@
   "folder": "Left Start 3 Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -29.999999999999996
   },
   "useDefaultConstraints": true
 }

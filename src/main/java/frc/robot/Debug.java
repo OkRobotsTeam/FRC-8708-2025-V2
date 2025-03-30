@@ -59,9 +59,11 @@ public class Debug {
         if (i == null) {
             i = 0;
         }
-        if (i++ % 10 == 0) {
+        i = i+1;
+        if (i%20 == 0) {
             println(args);
         }
+        map.put(key,i);
     }
 
     public static void println(Object... args) {
@@ -72,6 +74,9 @@ public class Debug {
             }
             if (o instanceof Double) {
                 output.append(twoPlaces((Double) o));
+            }
+            if (o instanceof Long) {
+                output.append((Long) o);
             }
             if (o instanceof Integer) {
                 output.append((Integer) o);

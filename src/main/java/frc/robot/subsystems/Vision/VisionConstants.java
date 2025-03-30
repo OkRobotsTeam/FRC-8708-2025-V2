@@ -46,9 +46,9 @@ public class VisionConstants {
     public static String rightAlignmentCameraName = "right_alignment_camera";
 
     public static Transform3d robotToCenterAlignmentCamera = new Transform3d(
-            Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
-            Units.inchesToMeters(-14), // +Right / -Left 11.5
-            Units.inchesToMeters(12), // +Up / -Down
+            Units.inchesToMeters(1.983), // +Forwards/ -Backwards 3.5
+            Units.inchesToMeters(-13.292), // +Right / -Left 11.5
+            Units.inchesToMeters(8.262), // +Up / -Down
             new Rotation3d(
                     Units.degreesToRadians(0),
                     Units.degreesToRadians(0),
@@ -56,23 +56,25 @@ public class VisionConstants {
     );
 
     public static Transform3d robotToLeftAlignmentCamera = new Transform3d(
-            Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
-            Units.inchesToMeters(-14), // +Right / -Left 11.5
-            Units.inchesToMeters(12), // +Up / -Down
+            Units.inchesToMeters(13.034), // +Forwards/ -Backwards 3.5
+            Units.inchesToMeters(-11.956), // +Right / -Left 11.5
+            Units.inchesToMeters(6.289), // +Up / -Down
             new Rotation3d(
                     Units.degreesToRadians(0),
-                    Units.degreesToRadians(0),
-                    Units.degreesToRadians(-90))
+                    Units.degreesToRadians(15),
+                    Units.degreesToRadians(-123.62)
+            )
     );
 
     public static Transform3d robotToRightAlignmentCamera = new Transform3d(
-            Units.inchesToMeters(3), // +Forwards/ -Backwards 3.5
-            Units.inchesToMeters(-14), // +Right / -Left 11.5
-            Units.inchesToMeters(12), // +Up / -Down
+            Units.inchesToMeters(-12.86), // +Forwards/ -Backwards 3.5
+            Units.inchesToMeters(-11.929), // +Right / -Left 11.5
+            Units.inchesToMeters(6.237), // +Up / -Down
             new Rotation3d(
                     Units.degreesToRadians(0),
-                    Units.degreesToRadians(0),
-                    Units.degreesToRadians(-90))
+                    Units.degreesToRadians(15),
+                    Units.degreesToRadians(-51.318)
+            )
     );
 
     // Basic filtering thresholds

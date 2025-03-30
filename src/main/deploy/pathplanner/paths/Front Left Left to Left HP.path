@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.87,
-        "y": 5.36
+        "x": 4.846518342391304,
+        "y": 5.327539062499999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.249281094136301,
-        "y": 6.099743986054211
+        "x": 4.2257994365276055,
+        "y": 6.067283048554209
       },
       "isLocked": false,
       "linkedName": "FrontLeftLeft"
     },
     {
       "anchor": {
-        "x": 1.38,
-        "y": 7.2
+        "x": 1.1115,
+        "y": 7.276625
       },
       "prevControl": {
-        "x": 2.0630608552166234,
-        "y": 6.385959771835116
+        "x": 1.7945608552166235,
+        "y": 6.462584771835116
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,30 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "lowerElevator",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "lowerElevator"
+        }
+      }
+    },
+    {
+      "name": "algaeIn",
+      "waypointRelativePos": 0.24641529474243226,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "algaeIn"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

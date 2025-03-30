@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.38,
-        "y": 7.2
+        "x": 1.1115,
+        "y": 7.276625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.316313502556326,
-        "y": 6.084145019534032
+        "x": 2.047813502556326,
+        "y": 6.160770019534032
       },
       "isLocked": false,
       "linkedName": "LeftHP"
     },
     {
       "anchor": {
-        "x": 3.8,
-        "y": 5.17
+        "x": 3.856125,
+        "y": 5.160875
       },
       "prevControl": {
-        "x": 2.9047306552095185,
-        "y": 6.236940457993521
+        "x": 2.960855655209519,
+        "y": 6.227815457993521
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,52 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "deliver",
+      "waypointRelativePos": 0.3297188755020092,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "deliver"
+        }
+      }
+    },
+    {
+      "name": "deliveryIn",
+      "waypointRelativePos": 0.48313253012048635,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "deliveryIn"
+        }
+      }
+    },
+    {
+      "name": "stopDelivery",
+      "waypointRelativePos": 0.6028112449799176,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "stopDelivery"
+        }
+      }
+    },
+    {
+      "name": "raiseElevatorTo4",
+      "waypointRelativePos": 0.9024096385542131,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "raiseElevatorTo4"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
