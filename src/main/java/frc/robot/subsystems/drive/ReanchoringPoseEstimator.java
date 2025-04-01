@@ -56,9 +56,9 @@ public class ReanchoringPoseEstimator {
             this.speedDiff = speedDiff;
         }
     }
-
-    public Pose2d anchorOdometry = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    public Pose2d anchorVision = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public Pose2d zeroPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public Pose2d anchorOdometry = zeroPose;
+    public Pose2d anchorVision = zeroPose;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
     public SwerveDriveOdometry odometry;
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
@@ -120,12 +120,43 @@ public class ReanchoringPoseEstimator {
             }
 //            Debug.println("TotalDiff ", totalDiff);
             if (totalDiff < 50) {
+                //Re-Anchor
                 anchorOdometry = matchingOdometry.pose;
-                anchorVision = visionPose;
-                diffR = matchingOdometry.pose.getRotation().minus(visionPose.getRotation());
+                if (anchorVision == zeroPose) {
+                    anchorVision = visionPose;
+                } else {
+                    Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
+                    Pose2d newEstimate = interpolate(0.2,oldEstimate, visionPose);
+                    anchorVision = newEstimate;
+                }
+                diffR = matchingOdometry.pose.getRotation().minus(anchorVision.getRotation());
+
+                //To-do
+                /* the reanchoring algorythm should be rewritten to assume that vision can only pinpoint the robots position 
+                within a circle of a radius that grows proportional to the distance from the tag it is detecting.  The further the 
+                robot from the tag, the bigger the circle of inaccuracy.  It should only correct the anchor if the vision measurement
+                is outside that circle.  Using this method, as the robot moves closer to a tag, the position would be continuously 
+                adjusted to be more accurate.  The data would still be used, but only outliers in one direction which would pull the 
+                anchor twoards that direction using interpolation.  If the circle is slightly bigger than the noise profile, the anchor
+                will only get pushed towards the right place.  
+                
+                It should also use this circle to dampen movement detected by vision.  Currently the speedDiff is registering lots 
+                of movement from vision when the robot is still even though the vision measurements are relatively stable because 
+                of how fast the robot would have to move to actually be at all the positions indicated.  This causes us to consider
+                data unusable that we could probably be using to our advantage.  If we could ignore motion within the circle of 
+                inaccuracy then we could better determine if the data is good.  I haven't figured out how to do this math yet.  It might
+                be better to simply accept all the data and use the radius of innacuracy to choose not to reanchor as long as we are 
+                within that circle.  The size of the circle could be a tunable parameter that we get from looking at AdvantageScope replays
+                (Assuming we ever figure those out)*/
             }
         }
     }
+
+    public Pose2d interpolate(double scalar, Pose2d pose1, Pose2d pose2) {
+        Transform2d difference = pose1.minus(pose2).times(scalar);
+        return pose1.transformBy(difference);
+    }
+    
 
     /* Generate a number representing how far off the vision speed was from the odometry speed */
     public double calculateSpeedDelta(Pose2d visionPose, OdometryHistoryEntry thisOdometry,
@@ -157,6 +188,11 @@ public class ReanchoringPoseEstimator {
 
     public Pose2d getAnchor() {
         return anchorVision;
+    }
+
+    public Pose2d getEstimatedPosition(Pose2d odometryPose) {
+        Transform2d movement = odometryPose.minus(anchorOdometry);
+        return(anchorVision.transformBy(movement));
     }
 
     public Pose2d getCurrentPose() {
