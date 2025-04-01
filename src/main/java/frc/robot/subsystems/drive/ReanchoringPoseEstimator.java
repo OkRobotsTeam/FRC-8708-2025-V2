@@ -56,9 +56,9 @@ public class ReanchoringPoseEstimator {
             this.speedDiff = speedDiff;
         }
     }
-
-    public Pose2d anchorOdometry = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-    public Pose2d anchorVision = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public Pose2d zeroPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+    public Pose2d anchorOdometry = zeroPose;
+    public Pose2d anchorVision = zeroPose;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
     public SwerveDriveOdometry odometry;
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
@@ -121,15 +121,18 @@ public class ReanchoringPoseEstimator {
             }
 //            Debug.println("TotalDiff ", totalDiff);
             if (totalDiff < 50) {
-                Debug.debugPrint("Reanchoring: "+ totalDiff);
                 anchorOdometry = matchingOdometry.pose;
                 anchorVision = visionPose;
                 diffR = matchingOdometry.pose.getRotation().minus(visionPose.getRotation());
-            } else {
-                Debug.dprintln("Not reanchoring: ", totalDiff);
             }
         }
     }
+
+    public Pose2d interpolate(double scalar, Pose2d pose1, Pose2d pose2) {
+        Transform2d difference = pose1.minus(pose2).times(scalar);
+        return pose1.transformBy(difference);
+    }
+
 
     /* Generate a number representing how far off the vision speed was from the odometry speed */
     public double calculateSpeedDelta(Pose2d visionPose, OdometryHistoryEntry thisOdometry,
@@ -160,6 +163,11 @@ public class ReanchoringPoseEstimator {
 
     public Pose2d getAnchor() {
         return anchorVision;
+    }
+
+    public Pose2d getEstimatedPosition(Pose2d odometryPose) {
+        Transform2d movement = odometryPose.minus(anchorOdometry);
+        return(anchorVision.transformBy(movement));
     }
 
     public Pose2d getCurrentPose() {
