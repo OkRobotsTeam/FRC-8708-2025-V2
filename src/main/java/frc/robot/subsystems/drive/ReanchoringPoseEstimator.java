@@ -34,15 +34,15 @@ public class ReanchoringPoseEstimator {
     /*
      * VisionHistoryEntry is the most important data structure in the reanchoring algorithm. It contains a pose2d of where vision
      * thinks the robot is combined with a matching odometry history entry and speed difference.
-     * 
+     *
      * Finding the matching odometry history entry requires looking through the odometry history for a measurement that
      * was taken at approximately the same time as the snapshot was taken that the vision positioning is based on.
-     * 
+     *
      * The third entry in the data structure is a speed difference. This is calculated by generating the speed indicated by vision
      * (comparing the positions indicated by the last two vision entries) and the speed indicated by odometry and differencing those
      * speeds. It is used to determine confidence that the vision entry is valid and accurate. Inaccurate vision measurements tend
      * to bounce around rapidly and their speeds do not match the speed of the robot.
-     * 
+     *
      * With this data structure populated, we can anchor our odometry to the most recent accurate vision reading in the past.
      */
     private class VisionHistoryEntry {
@@ -121,9 +121,34 @@ public class ReanchoringPoseEstimator {
             }
 //            Debug.println("TotalDiff ", totalDiff);
             if (totalDiff < 50) {
+                //Re-Anchor
                 anchorOdometry = matchingOdometry.pose;
-                anchorVision = visionPose;
-                diffR = matchingOdometry.pose.getRotation().minus(visionPose.getRotation());
+                if (anchorVision == zeroPose) {
+                    anchorVision = visionPose;
+                } else {
+                    Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
+                    Pose2d newEstimate = interpolate(0.2,oldEstimate, visionPose);
+                    anchorVision = newEstimate;
+                }
+                diffR = matchingOdometry.pose.getRotation().minus(anchorVision.getRotation());
+
+                //To-do
+                /* the reanchoring algorythm should be rewritten to assume that vision can only pinpoint the robots position
+                within a circle of a radius that grows proportional to the distance from the tag it is detecting.  The further the
+                robot from the tag, the bigger the circle of inaccuracy.  It should only correct the anchor if the vision measurement
+                is outside that circle.  Using this method, as the robot moves closer to a tag, the position would be continuously
+                adjusted to be more accurate.  The data would still be used, but only outliers in one direction which would pull the
+                anchor twoards that direction using interpolation.  If the circle is slightly bigger than the noise profile, the anchor
+                will only get pushed towards the right place.
+
+                It should also use this circle to dampen movement detected by vision.  Currently the speedDiff is registering lots
+                of movement from vision when the robot is still even though the vision measurements are relatively stable because
+                of how fast the robot would have to move to actually be at all the positions indicated.  This causes us to consider
+                data unusable that we could probably be using to our advantage.  If we could ignore motion within the circle of
+                inaccuracy then we could better determine if the data is good.  I haven't figured out how to do this math yet.  It might
+                be better to simply accept all the data and use the radius of innacuracy to choose not to reanchor as long as we are
+                within that circle.  The size of the circle could be a tunable parameter that we get from looking at AdvantageScope replays
+                (Assuming we ever figure those out)*/
             }
         }
     }
@@ -140,9 +165,10 @@ public class ReanchoringPoseEstimator {
         double visionMovement = distanceBetween(visionPose, lastVision.pose);
         double visionRotation = Math.abs(visionPose.getRotation().minus(lastVision.pose.getRotation()).getRadians());
         double visionCombined = (visionMovement + visionRotation * 5) * 100;
-//        Debug.dprintln("visionSpeed", "Vision Math", "Lateral: ",visionMovement,
-//            "Rotation:" , visionRotation, " vx: ", visionPose.getX(), " vy: ", visionPose.getY());
-//
+        // Debug.debugPrint("Vision Math", "Lateral: " + fmt(visionMovement) + "
+        // Rotation:" +
+        // fmt(visionRotation) + " vx: " + fmt(visionPose.getX()) + " vy: " +
+        // fmt(visionPose.getY()));
         OdometryHistoryEntry lastOdometry = lastVision.o;
         double odometryMovement = distanceBetween(thisOdometry.pose, lastOdometry.pose);
         double odometryRotation = Math.abs(
