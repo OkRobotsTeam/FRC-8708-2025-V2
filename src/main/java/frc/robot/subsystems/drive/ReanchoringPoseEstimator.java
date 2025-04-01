@@ -114,15 +114,19 @@ public class ReanchoringPoseEstimator {
                 new VisionHistoryEntry(visionPose, odometryHistory.get(matching), speedDelta));
 
         double totalDiff = 0;
-        if (visionHistory.size() > 10) {
-            for (int i = 0; i < 10; i++) {
+        if (visionHistory.size() > 2) {
+            int sampleSize = Math.min(10,visionHistory.size());
+            for (int i = 0; i < sampleSize; i++) {
                 totalDiff += visionHistory.get(i).speedDiff;
             }
 //            Debug.println("TotalDiff ", totalDiff);
             if (totalDiff < 50) {
+                Debug.debugPrint("Reanchoring: "+ totalDiff);
                 anchorOdometry = matchingOdometry.pose;
                 anchorVision = visionPose;
                 diffR = matchingOdometry.pose.getRotation().minus(visionPose.getRotation());
+            } else {
+                Debug.dprintln("Not reanchoring: ", totalDiff);
             }
         }
     }
@@ -133,17 +137,16 @@ public class ReanchoringPoseEstimator {
         double visionMovement = distanceBetween(visionPose, lastVision.pose);
         double visionRotation = Math.abs(visionPose.getRotation().minus(lastVision.pose.getRotation()).getRadians());
         double visionCombined = (visionMovement + visionRotation * 5) * 100;
-        // Debug.debugPrint("Vision Math", "Lateral: " + fmt(visionMovement) + "
-        // Rotation:" +
-        // fmt(visionRotation) + " vx: " + fmt(visionPose.getX()) + " vy: " +
-        // fmt(visionPose.getY()));
+//        Debug.dprintln("visionSpeed", "Vision Math", "Lateral: ",visionMovement,
+//            "Rotation:" , visionRotation, " vx: ", visionPose.getX(), " vy: ", visionPose.getY());
+//
         OdometryHistoryEntry lastOdometry = lastVision.o;
         double odometryMovement = distanceBetween(thisOdometry.pose, lastOdometry.pose);
         double odometryRotation = Math.abs(
                 thisOdometry.pose.getRotation().minus(lastOdometry.pose.getRotation()).getRadians());
         double odometryCombined = (odometryMovement + odometryRotation * 5) * 100;
-//        Debug.println("Vision Movement: ", visionCombined, " Odometry Movement: ",
-//                odometryCombined);
+        Debug.println("speedDiff", "Vision Movement: ", visionCombined, " Odometry Movement: ",
+                odometryCombined);
         return (Math.abs(visionCombined - odometryCombined));
     }
 

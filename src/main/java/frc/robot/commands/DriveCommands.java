@@ -269,8 +269,11 @@ public class DriveCommands {
                             // Calculate angular speed
                             double omega =
                                     angleController.calculate(
-                                            drive.getRotation().getRadians(), approachSupplier.get().getRotation()
-                                                    .rotateBy(Rotation2d.kCW_90deg).getRadians());
+                                            drive.getRotation().getRadians(), approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg).getRadians());
+
+                            if (drive.getRotation().minus(approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg)).getDegrees() < 1) {
+                                omega = 0;
+                            }
 
                             SmartDashboard.putNumber("Current Angle (rad)", drive.getRotation().getRadians());
                             SmartDashboard.putNumber("Target Angle (rad)", approachSupplier.get().getRotation().rotateBy(Rotation2d.kCCW_90deg).getRadians());

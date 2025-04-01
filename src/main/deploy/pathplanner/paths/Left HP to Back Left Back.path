@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1115,
-        "y": 7.276625
+        "x": 0.999375,
+        "y": 7.115749999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9926520704869484,
-        "y": 6.2265088543753535
+        "x": 2.325375,
+        "y": 6.1114999999999995
       },
       "isLocked": false,
-      "linkedName": "LeftHP"
+      "linkedName": "LeftHPIn"
     },
     {
       "anchor": {
-        "x": 3.549,
-        "y": 4.9853749999999994
+        "x": 3.55875,
+        "y": 4.99025
       },
       "prevControl": {
-        "x": 2.6537306552095186,
-        "y": 6.05231545799352
+        "x": 2.881125,
+        "y": 6.17975
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BackLeftBack"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "raiseElevatorTo4",
-      "waypointRelativePos": 0.8999999999999965,
+      "waypointRelativePos": 0.802008032128512,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

@@ -212,6 +212,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+            //poseEstimator2.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+
         }
 
         fieldMap.setRobotPose(getPose());
@@ -339,6 +341,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Resets the current odometry pose. */
     public void setPose(Pose2d pose) {
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+        //poseEstimator2.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
     /** Adds a new timestamped vision measurement. */
@@ -350,6 +353,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         // System.out.println("Adding pose to estimator: " + visionRobotPoseMeters);
         poseEstimator.addVisionMeasurement(
                 visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+
+//        poseEstimator2.addVisionMeasurement(
+//                visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 
     /** Returns the maximum linear speed in meters per sec. */

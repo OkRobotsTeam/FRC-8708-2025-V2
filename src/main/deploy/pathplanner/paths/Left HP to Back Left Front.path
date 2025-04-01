@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1115,
-        "y": 7.276625
+        "x": 1.12125,
+        "y": 7.27175
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.047813502556326,
-        "y": 6.160770019534032
+        "x": 2.0575635025563264,
+        "y": 6.155895019534031
       },
       "isLocked": false,
       "linkedName": "LeftHP"
@@ -34,23 +34,12 @@
   "eventMarkers": [
     {
       "name": "deliver",
-      "waypointRelativePos": 0.3297188755020092,
+      "waypointRelativePos": 0.25341365461846893,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "deliver"
-        }
-      }
-    },
-    {
-      "name": "deliveryIn",
-      "waypointRelativePos": 0.48313253012048635,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "deliveryIn"
         }
       }
     },
@@ -67,7 +56,7 @@
     },
     {
       "name": "raiseElevatorTo4",
-      "waypointRelativePos": 0.9024096385542131,
+      "waypointRelativePos": 0.7979919678714873,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

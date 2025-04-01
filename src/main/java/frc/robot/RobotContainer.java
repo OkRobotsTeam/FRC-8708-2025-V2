@@ -67,7 +67,7 @@ public class RobotContainer {
     public final Vision vision;
 
     /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
+     * The container for the robot. Contains subsystems, IO devices, and commands.
      */
     public RobotContainer() {
         swerveDrivetrain = new Drive(
@@ -311,6 +311,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopDelivery", new InstantCommand(() -> delivery.setDeliveryMotor(0)));
         NamedCommands.registerCommand("algaeOut", new InstantCommand(pickup::lowerPickup));
         NamedCommands.registerCommand("algaeIn", new InstantCommand(pickup::raisePickup));
+        NamedCommands.registerCommand("algaeHalfway", new InstantCommand(() -> pickup.movePickupToPosition(4)));
+        NamedCommands.registerCommand("algaeInAllTheWay", new InstantCommand(() -> pickup.movePickupToPosition(0)));
         NamedCommands.registerCommand("algaeIntake", new InstantCommand(() -> pickup.setIntakeMotors(-1)));
         NamedCommands.registerCommand("algaeOuttake", new InstantCommand(() -> pickup.setIntakeMotors(1)));
         NamedCommands.registerCommand("algaeStop", new InstantCommand(() -> pickup.setIntakeMotors(0)));
