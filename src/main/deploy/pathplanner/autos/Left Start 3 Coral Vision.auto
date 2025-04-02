@@ -49,6 +49,18 @@
         {
           "type": "named",
           "data": {
+            "name": "raiseElevatorTo3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForElevatorPrecise"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "lowerElevator"
           }
         },
@@ -67,7 +79,7 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo2"
+            "name": "raiseElevatorTo1"
           }
         },
         {
@@ -103,6 +115,18 @@
         {
           "type": "named",
           "data": {
+            "name": "raiseElevatorTo3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForElevatorPrecise"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "lowerElevator"
           }
         },
@@ -121,7 +145,7 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo2"
+            "name": "raiseElevatorTo1"
           }
         },
         {

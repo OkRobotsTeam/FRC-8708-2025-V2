@@ -19,7 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Center Start to Front Right"
+            "pathName": "Center Start to Center Move"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Move to Front Right"
           }
         },
         {

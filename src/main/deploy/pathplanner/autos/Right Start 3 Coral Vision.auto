@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left Start to Front Left Left"
+            "pathName": "Right Start to Front Right Back"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "raiseElevatorTo4"
+            "pathName": "Front Right Back to Front Right Right"
           }
         },
         {
@@ -37,7 +37,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.4
           }
         },
         {
@@ -49,25 +49,13 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "lowerElevator"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Front Left Left to Left HP"
+            "pathName": "Front Right Right to Right HP"
           }
         },
         {
@@ -77,27 +65,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo3"
+            "name": "raiseElevatorTo2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left HP to Back Left Front"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo4"
+            "pathName": "Right HP to Back Right Front"
           }
         },
         {
@@ -115,7 +91,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.8
           }
         },
         {
@@ -127,25 +103,13 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "lowerElevator"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Back Left Front to Left HP"
+            "pathName": "Back Right Front to Right HP"
           }
         },
         {
@@ -155,27 +119,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo3"
+            "name": "raiseElevatorTo2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Left HP to Back Left Back"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo4"
+            "pathName": "Right HP to Back Right Back"
           }
         },
         {
@@ -193,7 +145,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.9
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeInAllTheWay"
           }
         },
         {

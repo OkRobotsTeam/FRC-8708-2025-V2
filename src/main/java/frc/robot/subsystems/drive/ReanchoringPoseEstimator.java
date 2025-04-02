@@ -123,7 +123,7 @@ public class ReanchoringPoseEstimator {
             if (totalDiff < 50) {
                 //Re-Anchor
                 anchorOdometry = matchingOdometry.pose;
-                if (anchorVision == zeroPose) {
+                if (true) {
                     anchorVision = visionPose;
                 } else {
                     Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
@@ -174,8 +174,8 @@ public class ReanchoringPoseEstimator {
         double odometryRotation = Math.abs(
                 thisOdometry.pose.getRotation().minus(lastOdometry.pose.getRotation()).getRadians());
         double odometryCombined = (odometryMovement + odometryRotation * 5) * 100;
-        Debug.println("speedDiff", "Vision Movement: ", visionCombined, " Odometry Movement: ",
-                odometryCombined);
+//        Debug.println("speedDiff", "Vision Movement: ", visionCombined, " Odometry Movement: ",
+//                odometryCombined);
         return (Math.abs(visionCombined - odometryCombined));
     }
 

@@ -78,7 +78,7 @@ public class VisionConstants {
     );
 
     // Basic filtering thresholds
-    public static double maxAmbiguity = 0.3;
+    public static double maxAmbiguity = 0.4;
     public static double maxZError = 0.75;
 
     // Standard deviation baselines, for 1 meter distance and 1 tag
@@ -94,10 +94,10 @@ public class VisionConstants {
             1.0
     };
 
-    // public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 14, 15, 16);
+    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 13, 14, 15, 16);
     public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
 
-    public static List<Integer> rejectedTags = List.of();
+    //public static List<Integer> rejectedTags = List.of();
 
     public static double LEFT_ALIGNMENT_OFFSET_INCHES = 0;
     public static double RIGHT_ALIGNMENT_OFFSET_INCHES = 17;

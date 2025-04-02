@@ -150,6 +150,9 @@ public class Vision extends SubsystemBase {
                 } else if (observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
                     rejectPose = true;
                     rejectionReason = "Y position outside field boundaries (0 to " + aprilTagLayout.getFieldWidth() + ").";
+                } else if (observation.averageTagDistance() > 6 ) {
+                    rejectPose = true;
+                    rejectionReason = "Average distance to tag too high " + observation.averageTagDistance();
                 }
 
                 // Add pose to log

@@ -266,12 +266,16 @@ public class DriveCommands {
                             SmartDashboard.putData(alignController); // TODO: Calibrate PID
                             Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
 
+
+                            Rotation2d target_angle = approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg);
+//                            target_angle = target_angle + Rotation2d.fromDegrees()
+
                             // Calculate angular speed
                             double omega =
                                     angleController.calculate(
-                                            drive.getRotation().getRadians(), approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg).getRadians());
+                                            drive.getRotation().getRadians(), target_angle.getRadians());
 
-                            if (drive.getRotation().minus(approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg)).getDegrees() < 1) {
+                            if (drive.getRotation().minus(target_angle).getDegrees() < 0.25) {
                                 omega = 0;
                             }
 

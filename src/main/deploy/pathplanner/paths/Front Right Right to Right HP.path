@@ -3,35 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.856125,
-        "y": 5.160875
+        "x": 5.172375,
+        "y": 2.879375
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.974972929513052,
-        "y": 6.2109911456246465
+        "x": 5.0115,
+        "y": 1.6557499999999994
       },
       "isLocked": false,
-      "linkedName": "BackLeftFront"
+      "linkedName": "FrontRightRight"
     },
     {
       "anchor": {
         "x": 1.12125,
-        "y": 7.27175
+        "y": 0.728
       },
       "prevControl": {
-        "x": 2.0165193447904812,
-        "y": 6.20480954200648
+        "x": 2.071875,
+        "y": 2.1481250000000003
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftHP"
+      "linkedName": "RightHP"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "lowerElevator",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "lowerElevator"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -42,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.00000000000001
+    "rotation": -127.00000000000001
   },
   "reversed": false,
   "folder": "Right Start 3 Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 29.999999999999996
+    "rotation": -150.0
   },
   "useDefaultConstraints": true
 }
