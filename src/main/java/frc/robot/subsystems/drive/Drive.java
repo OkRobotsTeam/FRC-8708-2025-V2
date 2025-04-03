@@ -105,10 +105,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                     new SwerveModulePosition(),
                     new SwerveModulePosition()
             };
-    //private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-    private final ReanchoringPoseEstimator poseEstimator = new ReanchoringPoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final ReanchoringPoseEstimator poseEstimator2 = new ReanchoringPoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
     private double speed;
-
+    public enum VisionMode {SIMPLE, ANCHORING, NONE}
+    public VisionMode visionMode = VisionMode.ANCHORING;
     public Drive(
             GyroIO gyroIO,
             ModuleIO flModuleIO,
@@ -212,7 +213,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-            //poseEstimator2.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+            poseEstimator2.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
 
         }
 
@@ -330,6 +331,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Returns the current odometry pose. */
     @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
+        if (mode == )
         return poseEstimator.getEstimatedPosition();
     }
 
@@ -341,7 +343,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Resets the current odometry pose. */
     public void setPose(Pose2d pose) {
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-        //poseEstimator2.resetPosition(rawGyroRotation, getModulePositions(), pose);
+        poseEstimator2.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
     /** Adds a new timestamped vision measurement. */
@@ -354,8 +356,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         poseEstimator.addVisionMeasurement(
                 visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
 
-//        poseEstimator2.addVisionMeasurement(
-//                visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+        poseEstimator2.addVisionMeasurement(
+                visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 
     /** Returns the maximum linear speed in meters per sec. */

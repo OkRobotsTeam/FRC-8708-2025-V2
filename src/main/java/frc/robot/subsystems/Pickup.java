@@ -54,6 +54,10 @@ public class Pickup extends SubsystemBase {
         rotationPID.setSetpoint(RAISED_SETPOINT);
     }
 
+    public void middlePickup() {
+        rotationPID.setSetpoint(MIDDLE_SETPOINT);
+    }
+
     public void movePickupToPosition(double position) {
         rotationPID.setSetpoint(position);
     }
@@ -81,6 +85,12 @@ public class Pickup extends SubsystemBase {
 
     public BooleanSupplier isNotExtended() {
         return () -> (rotationPID.getSetpoint() != RAISED_SETPOINT);
+    }
+
+    public void togglePickup() {
+        if (Math.abs(pickupMotorKraken.get()) > 0) {
+            stopIntake();
+        } else runIntakeIn();
     }
 
 }

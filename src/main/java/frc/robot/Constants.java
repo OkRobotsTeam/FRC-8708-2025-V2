@@ -118,11 +118,12 @@ public class Constants {
         public static int CURRENT_LIMIT_STALLED = 20;
         public static int CURRENT_LIMIT_FREE = 20;
 
-        public static double INTAKE_IN_SPEED = 1;
-        public static double INTAKE_OUT_SPEED = -1;
+        public static double INTAKE_IN_SPEED = -1;
+        public static double INTAKE_OUT_SPEED = 1;
 
         public static double RAISED_SETPOINT = 2;
         public static double LOWERED_SETPOINT = 9.1;
+        public static double MIDDLE_SETPOINT = 6;
 
         public static final double KP = 0.05;
         public static final double KI = 0;

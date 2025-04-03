@@ -22,9 +22,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -50,6 +52,7 @@ public class RobotContainer {
     // Controllers
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
+    private final CommandGenericHID elevatorButtons = new CommandGenericHID(2);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -65,6 +68,7 @@ public class RobotContainer {
     private final Pickup pickup = new Pickup();
 
     public final Vision vision;
+
 
     /**
      * The container for the robot. Contains subsystems, IO devices, and commands.
@@ -286,8 +290,16 @@ public class RobotContainer {
         manipulatorController.b().onTrue(Commands.runOnce(pickup::runIntakeOut));
         manipulatorController.b().onFalse(Commands.runOnce(pickup::stopIntake));
 
-        manipulatorController.x().onTrue(Commands.runOnce(pickup::runIntakeIn));
-        manipulatorController.x().onFalse(Commands.runOnce(pickup::stopIntake));
+        manipulatorController.x().onTrue(Commands.runOnce(pickup::togglePickup));
+
+        manipulatorController.povLeft().onTrue(Commands.runOnce(pickup::middlePickup));
+
+        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
+        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
+        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
+        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
+        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
+
 
         driveController.rightTrigger().onTrue(Commands.runOnce(
                 () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
