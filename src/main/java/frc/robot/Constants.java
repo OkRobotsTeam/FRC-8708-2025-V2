@@ -121,8 +121,8 @@ public class Constants {
         public static double INTAKE_IN_SPEED = 1;
         public static double INTAKE_OUT_SPEED = -1;
 
-        public static double RAISED_SETPOINT = 3;
-        public static double LOWERED_SETPOINT = 8;
+        public static double RAISED_SETPOINT = 2;
+        public static double LOWERED_SETPOINT = 9.1;
 
         public static final double KP = 0.05;
         public static final double KI = 0;
