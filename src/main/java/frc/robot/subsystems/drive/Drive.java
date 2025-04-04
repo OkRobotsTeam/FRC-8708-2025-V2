@@ -105,11 +105,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                     new SwerveModulePosition(),
                     new SwerveModulePosition()
             };
-    private final SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-    private final ReanchoringPoseEstimator poseEstimator2 = new ReanchoringPoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final SwerveDrivePoseEstimator basicPoseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+    private final ReanchoringPoseEstimator poseEstimator = new ReanchoringPoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
     private double speed;
     public enum VisionMode {SIMPLE, ANCHORING, NONE}
-    public VisionMode visionMode = VisionMode.ANCHORING;
+    public VisionMode visionMode = VisionMode.SIMPLE;
     public Drive(
             GyroIO gyroIO,
             ModuleIO flModuleIO,
@@ -213,7 +213,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
             // Apply update
             poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
-            poseEstimator2.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+            basicPoseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
 
         }
 
@@ -331,8 +331,21 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Returns the current odometry pose. */
     @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
-        if (mode == )
-        return poseEstimator.getEstimatedPosition();
+        Logger.recordOutput("Odometry/Anchoring Pose Estimator", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Odometry/Raw Odometry Pose", poseEstimator.getOdometryPose());
+        Logger.recordOutput("Odometry/Basic Pose Estimator", basicPoseEstimator.getEstimatedPosition());
+
+        if (visionMode == VisionMode.SIMPLE) {
+            return basicPoseEstimator.getEstimatedPosition();
+        } else if (visionMode == VisionMode.ANCHORING) {
+            return poseEstimator.getEstimatedPosition();
+        } else {
+            return poseEstimator.getOdometryPose();
+        }
+    }
+
+    public void setPoseEstimator(VisionMode visionModeIn) {
+        visionMode = visionModeIn;
     }
 
     /** Returns the current odometry rotation. */
@@ -343,7 +356,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     /** Resets the current odometry pose. */
     public void setPose(Pose2d pose) {
         poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
-        poseEstimator2.resetPosition(rawGyroRotation, getModulePositions(), pose);
+        basicPoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
     }
 
     /** Adds a new timestamped vision measurement. */
@@ -355,8 +368,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         // System.out.println("Adding pose to estimator: " + visionRobotPoseMeters);
         poseEstimator.addVisionMeasurement(
                 visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-
-        poseEstimator2.addVisionMeasurement(
+        basicPoseEstimator.addVisionMeasurement(
                 visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 

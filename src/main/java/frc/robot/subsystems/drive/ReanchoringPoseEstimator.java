@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
+import org.littletonrobotics.junction.Logger;
+
 
 public class ReanchoringPoseEstimator {
 
@@ -89,6 +91,10 @@ public class ReanchoringPoseEstimator {
         }
     }
 
+    public Pose2d getOdometryPose() {
+        return odometry.getPoseMeters();
+    }
+
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
         //Debug.dprintln("Vision Times:", "FPGATime:", Timer.getFPGATimestamp(), "Vision:", timestampSeconds);
@@ -131,6 +137,8 @@ public class ReanchoringPoseEstimator {
                     anchorVision = newEstimate;
                 }
                 diffR = matchingOdometry.pose.getRotation().minus(anchorVision.getRotation());
+                Logger.recordOutput("ReanchoringPoseEstimator/VisionAnchor", anchorVision);
+                Logger.recordOutput("ReanchoringPoseEstimator/OdometryAnchor", anchorOdometry);
 
                 //To-do
                 /* the reanchoring algorythm should be rewritten to assume that vision can only pinpoint the robots position

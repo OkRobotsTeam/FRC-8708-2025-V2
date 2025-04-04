@@ -129,6 +129,7 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        m_robotContainer.periodic();
     }
 
     /** This function is called once when the robot is disabled. */

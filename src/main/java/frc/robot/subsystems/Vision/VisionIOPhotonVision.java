@@ -69,6 +69,7 @@ public class VisionIOPhotonVision implements VisionIO {
 
                 // Calculate average tag distance
                 double totalTagDistance = 0.0;
+
                 for (var target : result.targets) {
                     totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
                 }

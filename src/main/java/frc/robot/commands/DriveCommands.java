@@ -47,7 +47,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.Debug;
 
 public class DriveCommands {
-    private static final double DEADBAND = 0.1;
+    private static final double DEADBAND = 0.12;
     private static final double ANGLE_KP = 5.0;
     private static final double ANGLE_KD = 0.4;
     private static final double ANGLE_MAX_VELOCITY = 8.0;
@@ -225,8 +225,10 @@ public class DriveCommands {
                 () -> {
                     currentDriveMode = DriveMode.dmApproach;
                     // Name constants
+
                     Translation2d currentTranslation = drive.getPose().getTranslation();
                     Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                    Logger.recordOutput("AlignDebug/approachSupplier", approachSupplier.get());
 //                    Translation2d approachTranslation = getNe;
 
                             double distanceToApproach = currentTranslation.getDistance(approachTranslation);
@@ -242,6 +244,7 @@ public class DriveCommands {
                             double distanceToGoal =
                                     Math.hypot(robotToGoal.getX(), robotToGoal.getY());
 
+
 //                    if (Math.abs(distanceToGoal - Units.inchesToMeters(9.25)) <  Units.inchesToMeters(1)) {
 //                        distanceToGoal = Units.inchesToMeters(9.25);
 //                    }
@@ -254,7 +257,7 @@ public class DriveCommands {
                             alignController.calculate(distanceToGoal), 0)
                             .rotateBy(robotToGoal.getAngle());
 
-                            Logger.recordOutput("AlignDebug/Current", distanceToGoal);
+                            Logger.recordOutput("AlignDebug/distanceToGoal", distanceToGoal);
 
                             // Calculate total linear velocity
                             Translation2d linearVelocity =
@@ -264,7 +267,7 @@ public class DriveCommands {
                                             .plus(offsetVector);
 
                             SmartDashboard.putData(alignController); // TODO: Calibrate PID
-                            Logger.recordOutput("AlignDebug/approachTarget", approachTranslation);
+                            Logger.recordOutput("AlignDebug/approachTranslation", approachTranslation);
 
 
                             Rotation2d target_angle = approachSupplier.get().getRotation().rotateBy(Rotation2d.kCW_90deg);

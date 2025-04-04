@@ -57,6 +57,7 @@ public class RobotContainer {
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
     private final LoggedDashboardChooser<String> autoLineUp;
+    private final LoggedDashboardChooser<String> visionMode;
 
 
     // AK-enabled Subsystems
@@ -68,7 +69,7 @@ public class RobotContainer {
     private final Pickup pickup = new Pickup();
 
     public final Vision vision;
-
+    public String visionModeString = "Simple";
 
     /**
      * The container for the robot. Contains subsystems, IO devices, and commands.
@@ -95,6 +96,11 @@ public class RobotContainer {
         autoLineUp.addDefaultOption("Old Line Up", "Old Line Up");
         autoLineUp.addOption("New Line Up", "New Line Up");
         // Set up auto routines
+        visionMode = new LoggedDashboardChooser<>("Vision Mode");
+        visionMode.addDefaultOption("Simple", "Simple");
+        visionMode.addOption("Anchoring","Anchoring");
+        visionMode.addOption("None","None");
+
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
@@ -138,6 +144,19 @@ public class RobotContainer {
         }, delivery));
     }
 
+    public void periodic() {
+        if (!visionMode.get().equals(visionModeString)) {
+            visionModeString = visionMode.get();
+            System.out.println("Changing vision mode to " + visionModeString);
+            if (visionModeString.equals("None")) {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.NONE);
+            } else if (visionModeString.equals("Anchoring")) {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.ANCHORING);
+            } else {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.SIMPLE);
+            }
+        }
+    }
     public void teleopPeriodic() {
         if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
             pickup.manualAdjust(-manipulatorController.getHID().getRightY() * 0.16);
