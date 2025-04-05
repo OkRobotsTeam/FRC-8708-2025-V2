@@ -52,7 +52,7 @@ public class RobotContainer {
     // Controllers
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
-    private final CommandGenericHID elevatorButtons = new CommandGenericHID(2);
+//    private final CommandGenericHID elevatorButtons = new CommandGenericHID(2);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -101,6 +101,7 @@ public class RobotContainer {
         visionMode.addOption("Anchoring","Anchoring");
         visionMode.addOption("None","None");
 
+
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
@@ -142,20 +143,12 @@ public class RobotContainer {
                         (-manipulatorController.getHID().getRightTriggerAxis() / 4.0));
             }
         }, delivery));
+
+        pickup.raisePickup();
     }
 
     public void periodic() {
-        if (!visionMode.get().equals(visionModeString)) {
-            visionModeString = visionMode.get();
-            System.out.println("Changing vision mode to " + visionModeString);
-            if (visionModeString.equals("None")) {
-                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.NONE);
-            } else if (visionModeString.equals("Anchoring")) {
-                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.ANCHORING);
-            } else {
-                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.SIMPLE);
-            }
-        }
+
     }
     public void teleopPeriodic() {
         if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
@@ -168,6 +161,18 @@ public class RobotContainer {
         }
 
         elevator.manualAdjust(manualAdjustAmount * 6);
+
+        if (!visionMode.get().equals(visionModeString)) {
+            visionModeString = visionMode.get();
+            System.out.println("Changing vision mode to " + visionModeString);
+            if (visionModeString.equals("None")) {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.NONE);
+            } else if (visionModeString.equals("Anchoring")) {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.ANCHORING);
+            } else {
+                swerveDrivetrain.setPoseEstimator(Drive.VisionMode.SIMPLE);
+            }
+        }
     }
 
     public void testInit() {
@@ -313,11 +318,11 @@ public class RobotContainer {
 
         manipulatorController.povLeft().onTrue(Commands.runOnce(pickup::middlePickup));
 
-        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
-        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
-        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
-        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
-        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
+//        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
+//        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
+//        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
+//        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
+//        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
 
 
         driveController.rightTrigger().onTrue(Commands.runOnce(
@@ -364,5 +369,7 @@ public class RobotContainer {
     public void autonomousInit() {
         delivery.setDefaultCommand(Commands.idle(delivery));
         vision.visionEnabled = true;
+        swerveDrivetrain.visionMode = Drive.VisionMode.ANCHORING;
+        visionModeString = "Anchoring";
     }
 }

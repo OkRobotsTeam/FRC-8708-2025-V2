@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 6.24,
-        "y": 4.04
+        "y": 4.06
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.99,
-        "y": 4.04
+        "y": 4.06
       },
       "isLocked": false,
       "linkedName": "CenterMove"
