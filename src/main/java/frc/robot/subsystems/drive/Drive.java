@@ -332,6 +332,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     @AutoLogOutput(key = "Odometry/Robot")
     public Pose2d getPose() {
         Logger.recordOutput("Odometry/Anchoring Pose Estimator", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Odometry/Anchoring Pose Estimator2", poseEstimator.getEstimatedPosition2());
         Logger.recordOutput("Odometry/Raw Odometry Pose", poseEstimator.getOdometryPose());
         Logger.recordOutput("Odometry/Basic Pose Estimator", basicPoseEstimator.getEstimatedPosition());
 

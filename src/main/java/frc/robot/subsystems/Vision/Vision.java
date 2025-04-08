@@ -150,7 +150,7 @@ public class Vision extends SubsystemBase {
                 } else if (observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
                     rejectPose = true;
                     rejectionReason = "Y position outside field boundaries (0 to " + aprilTagLayout.getFieldWidth() + ").";
-                } else if (observation.averageTagDistance() > 60 ) {
+                } else if (observation.averageTagDistance() > 60) {
                     rejectPose = true;
                     rejectionReason = "Average distance to tag too high " + observation.averageTagDistance();
                 }
@@ -158,8 +158,10 @@ public class Vision extends SubsystemBase {
                 // Add pose to log
                 robotPoses.add(observation.pose());
                 if (rejectPose) {
-                     //System.out.println("Rejected vision observation: " + rejectionReason);
+                    //System.out.println("Rejected vision observation: " + rejectionReason);
                     robotPosesRejected.add(observation.pose());
+                } else {
+                    robotPosesAccepted.add(observation.pose());
                 }
 
                 // Skip if rejected
@@ -179,7 +181,7 @@ public class Vision extends SubsystemBase {
                 if (visionHasTarget && cameraPoses.size() > cameraIndex) {
                     cameraPoses.set(cameraIndex, observation.pose());
                     tagIds.set(cameraIndex, inputs[cameraIndex].tagIds[0]);
-                    sampleTimes.set(cameraIndex,System.currentTimeMillis());
+                    sampleTimes.set(cameraIndex, System.currentTimeMillis());
                 }
 
                 // Debug.dprintln("vision", "X: ", observation.pose().getTranslation().getX(), " Y: ",
@@ -189,13 +191,10 @@ public class Vision extends SubsystemBase {
                 // (180 / Math.PI));
 
                 // TODO: Re-enable other cameras once working
-                if (cameraIndex == 0) {
-                    // Send vision observation
-                    consumer.accept(
-                            observation.pose().toPose2d(),
-                            observation.timestamp(),
-                            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
-                }
+                consumer.accept(
+                        observation.pose().toPose2d(),
+                        observation.timestamp(),
+                        VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }
 
 

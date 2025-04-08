@@ -62,6 +62,10 @@ public class ReanchoringPoseEstimator {
     public Pose2d anchorOdometry = zeroPose;
     public Pose2d anchorVision = zeroPose;
     public Rotation2d diffR = Rotation2d.fromDegrees(0);
+    public Pose2d anchorOdometry2 = zeroPose;
+    public Pose2d anchorVision2 = zeroPose;
+    public Rotation2d diffR2 = Rotation2d.fromDegrees(0);
+
     public SwerveDriveOdometry odometry;
     ArrayList<OdometryHistoryEntry> odometryHistory = new ArrayList<OdometryHistoryEntry>();
     ArrayList<VisionHistoryEntry> visionHistory = new ArrayList<VisionHistoryEntry>();
@@ -126,6 +130,8 @@ public class ReanchoringPoseEstimator {
                 totalDiff += visionHistory.get(i).speedDiff;
             }
 //            Debug.println("TotalDiff ", totalDiff);
+            Logger.recordOutput("ReanchoringPoseEstimator/TotalDiff", totalDiff);
+
             if (totalDiff < 50) {
                 //Re-Anchor
                 anchorOdometry = matchingOdometry.pose;
@@ -159,11 +165,29 @@ public class ReanchoringPoseEstimator {
                 (Assuming we ever figure those out)*/
             }
         }
+        //Testing alternate algorithm
+        if (visionHistory.size() > 0) {
+            int lookBack = Math.min(5, visionHistory.size());
+            double oneSecondAgo = Timer.getFPGATimestamp() - 1;
+            int relevantSamples = 1;
+            for (int i=0; i<lookBack; i++)  {
+                if (visionHistory.get(i).o.time > oneSecondAgo) {
+                    relevantSamples++;
+                }
+            }
+            anchorOdometry2 = matchingOdometry.pose;
+            Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
+            Pose2d newEstimate = interpolate(1.0/relevantSamples, oldEstimate, visionPose);
+            anchorVision2 = newEstimate;
+        } else {
+            anchorOdometry2 = matchingOdometry.pose;
+            anchorVision2 = visionPose;
+        }
     }
 
     public Pose2d interpolate(double scalar, Pose2d pose1, Pose2d pose2) {
-        Transform2d difference = pose1.minus(pose2).times(scalar);
-        return pose1.transformBy(difference);
+        Transform2d difference = pose2.minus(pose1).times(scalar);
+        return pose1.plus(difference);
     }
 
 
@@ -213,15 +237,24 @@ public class ReanchoringPoseEstimator {
         return (newPosition);
     }
 
+    public Pose2d getEstimatedPosition2() {
+        OdometryHistoryEntry currentOdometry = odometryHistory.get(0);
+        Transform2d movement = currentOdometry.pose.minus(anchorOdometry2);
+        return anchorVision2.transformBy(movement);
+    }
+
     public Pose2d getEstimatedPosition() {
         return getCurrentPose();
     }
 
     public void resetPosition(Rotation2d gyroAngle, SwerveModulePosition[] wheelPositions, Pose2d pose) {
         odometry.resetPosition(gyroAngle, wheelPositions, pose);
-        anchorOdometry = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-        anchorVision = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        anchorOdometry = zeroPose;
+        anchorVision = zeroPose;
         diffR = Rotation2d.fromDegrees(0);
+        anchorOdometry2 = zeroPose;
+        anchorVision2 = zeroPose;
+        diffR2 = Rotation2d.fromDegrees(0);
         final OdometryHistoryEntry newEntry = new OdometryHistoryEntry(System.currentTimeMillis(), pose);
         odometryHistory.clear();
         odometryHistory.add(0, newEntry);
