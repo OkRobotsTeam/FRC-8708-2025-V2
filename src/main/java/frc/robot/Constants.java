@@ -92,11 +92,11 @@ public class Constants {
     public static class Elevator {
         public static double[] States = { 0, 13, 22, 38, 62 };
 
-        public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE = new TrapezoidProfile.Constraints(300.0,
-                100.0);
+        public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE = new TrapezoidProfile.Constraints(1200.0,
+                400);
 
         public static final double KG = 0.15;
-        public static final double KP = 0.1;
+        public static final double KP = 0.03;
         public static final double KI = 0;
         public static final double KD = 0;
         public static final boolean ENCODER_REVERSED = false;

@@ -41,12 +41,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "deliver"
@@ -85,7 +79,7 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeOut"
+            "name": "algaeHalfway"
           }
         },
         {
@@ -103,7 +97,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.3
           }
         },
         {
@@ -113,15 +107,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "algaeStop"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Copy of Front Left Middle to Front Left Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeStop"
           }
         },
         {
@@ -139,19 +133,13 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeOut"
+            "name": "algaeStop"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "algaeStop"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of Front Left Middle to Front Middle"
+            "name": "algaeHalfway"
           }
         },
         {
@@ -161,21 +149,21 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Front Left Middle to Front Middle"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
             "name": "algaeIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeStop"
           }
         },
         {
@@ -187,7 +175,7 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeIn"
+            "name": "algaeInAllTheWay"
           }
         },
         {

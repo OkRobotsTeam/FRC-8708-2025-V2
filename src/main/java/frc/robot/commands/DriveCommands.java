@@ -278,7 +278,7 @@ public class DriveCommands {
                                     angleController.calculate(
                                             drive.getRotation().getRadians(), target_angle.getRadians());
 
-                            if (drive.getRotation().minus(target_angle).getDegrees() < 0.25) {
+                            if (Math.abs(drive.getRotation().minus(target_angle).getDegrees()) < 1.0) {
                                 omega = 0;
                             }
 

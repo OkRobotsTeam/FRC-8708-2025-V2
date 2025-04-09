@@ -35,6 +35,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "algaeIn"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 0.4
@@ -44,18 +50,6 @@
           "type": "named",
           "data": {
             "name": "stopDelivery"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
           }
         },
         {
@@ -74,6 +68,12 @@
           "type": "named",
           "data": {
             "name": "waitForElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeIn"
           }
         },
         {
@@ -103,25 +103,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.8
+            "waitTime": 0.4
           }
         },
         {
           "type": "named",
           "data": {
             "name": "stopDelivery"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
           }
         },
         {
@@ -169,7 +157,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.9
+            "waitTime": 0.4
           }
         },
         {

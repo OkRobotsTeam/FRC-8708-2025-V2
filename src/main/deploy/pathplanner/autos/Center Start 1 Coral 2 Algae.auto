@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Center Start to Center Move"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "raiseElevatorTo3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Start to Center Move"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.4
           }
         },
         {
@@ -73,7 +73,7 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeOut"
+            "name": "algaeHalfway"
           }
         },
         {
@@ -91,19 +91,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
             "name": "algaeIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeStop"
           }
         },
         {
@@ -163,13 +157,7 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeOut"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Barge to Front Middle"
+            "name": "algaeHalfway"
           }
         },
         {
@@ -179,27 +167,21 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Right Barge to Front Middle"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0.7
+            "waitTime": 0.4
           }
         },
         {
           "type": "named",
           "data": {
             "name": "algaeIn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeStop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo3"
           }
         },
         {
@@ -242,18 +224,6 @@
           "type": "named",
           "data": {
             "name": "algaeStop"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
           }
         },
         {

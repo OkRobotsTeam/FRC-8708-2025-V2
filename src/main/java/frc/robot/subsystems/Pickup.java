@@ -9,6 +9,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
 
@@ -29,6 +30,8 @@ public class Pickup extends SubsystemBase {
     public void periodic() {
         double pidOutput = rotationPID.calculate(rotationMotor.getPosition().getValueAsDouble());
         rotationMotor.set(pidOutput);
+        Logger.recordOutput("Pickup/Setpoint", rotationPID.getSetpoint());
+
     }
 
     public Pickup() {

@@ -148,7 +148,6 @@ public class RobotContainer {
     }
 
     public void periodic() {
-
     }
     public void teleopPeriodic() {
         if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
@@ -347,8 +346,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopDelivery", new InstantCommand(() -> delivery.setDeliveryMotor(0)));
         NamedCommands.registerCommand("algaeOut", new InstantCommand(pickup::lowerPickup));
         NamedCommands.registerCommand("algaeIn", new InstantCommand(pickup::raisePickup));
-        NamedCommands.registerCommand("algaeHalfway", new InstantCommand(() -> pickup.movePickupToPosition(5)));
-        NamedCommands.registerCommand("algaeInAllTheWay", new InstantCommand(() -> pickup.movePickupToPosition(0)));
+        NamedCommands.registerCommand("algaeHalfway", new InstantCommand(pickup::middlePickup));
+        NamedCommands.registerCommand("algaeInAllTheWay", new InstantCommand(pickup::foldPickup));
         NamedCommands.registerCommand("algaeIntake", new InstantCommand(() -> pickup.setIntakeMotors(-1)));
         NamedCommands.registerCommand("algaeOuttake", new InstantCommand(() -> pickup.setIntakeMotors(1)));
         NamedCommands.registerCommand("algaeStop", new InstantCommand(() -> pickup.setIntakeMotors(0)));
@@ -369,7 +368,7 @@ public class RobotContainer {
     public void autonomousInit() {
         delivery.setDefaultCommand(Commands.idle(delivery));
         vision.visionEnabled = true;
-        swerveDrivetrain.visionMode = Drive.VisionMode.ANCHORING;
+        swerveDrivetrain.visionMode = Drive.VisionMode.SIMPLE;
         visionModeString = "Anchoring";
     }
 }

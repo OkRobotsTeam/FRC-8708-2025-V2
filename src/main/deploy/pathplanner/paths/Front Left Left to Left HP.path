@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.846518342391304,
-        "y": 5.327539062499999
+        "x": 4.7869055706521735,
+        "y": 5.30965523097826
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.2257994365276055,
-        "y": 6.067283048554209
+        "x": 4.166186664788475,
+        "y": 6.04939921703247
       },
       "isLocked": false,
       "linkedName": "FrontLeftLeft"
@@ -40,17 +40,6 @@
         "type": "named",
         "data": {
           "name": "lowerElevator"
-        }
-      }
-    },
-    {
-      "name": "algaeHalfway",
-      "waypointRelativePos": 0.24641529474243226,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "algaeHalfway"
         }
       }
     }

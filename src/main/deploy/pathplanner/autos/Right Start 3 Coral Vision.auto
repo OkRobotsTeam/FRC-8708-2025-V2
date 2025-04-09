@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "algaeIn"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Front Right Back to Front Right Right"

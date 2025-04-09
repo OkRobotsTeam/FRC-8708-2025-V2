@@ -108,6 +108,7 @@ public class ReanchoringPoseEstimator {
     public void newVisionEntry(Pose2d visionPose, double visionTime) {
 //        Debug.println("Vision entry: ", visionTime, " System time: ", System.currentTimeMillis());
         int matching = -1;
+        Logger.recordOutput("ReanchoringPoseEstimator/VisionPose", visionPose);
         for (int i = 0; i < odometryHistory.size(); i++) {
             if (odometryHistory.get(i).time <= visionTime) {
                 matching = i;
@@ -136,13 +137,7 @@ public class ReanchoringPoseEstimator {
             if (totalDiff < 50) {
                 //Re-Anchor
                 anchorOdometry = matchingOdometry.pose;
-                if (true) {
-                    anchorVision = visionPose;
-                } else {
-                    Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
-                    Pose2d newEstimate = interpolate(0.2,oldEstimate, visionPose);
-                    anchorVision = newEstimate;
-                }
+                anchorVision = visionPose;
                 diffR = matchingOdometry.pose.getRotation().minus(anchorVision.getRotation());
                 Logger.recordOutput("ReanchoringPoseEstimator/VisionAnchor", anchorVision);
                 Logger.recordOutput("ReanchoringPoseEstimator/OdometryAnchor", anchorOdometry);
@@ -178,18 +173,16 @@ public class ReanchoringPoseEstimator {
             }
             anchorOdometry2 = matchingOdometry.pose;
             Pose2d oldEstimate = getEstimatedPosition(matchingOdometry.pose);
-            Pose2d newEstimate = interpolate(1.0/relevantSamples, oldEstimate, visionPose);
+            Pose2d newEstimate = oldEstimate.interpolate( visionPose, 1.0/relevantSamples );
+            diffR2 = matchingOdometry.pose.getRotation().minus(anchorVision2.getRotation());
             anchorVision2 = newEstimate;
         } else {
             anchorOdometry2 = matchingOdometry.pose;
             anchorVision2 = visionPose;
+            diffR2 = matchingOdometry.pose.getRotation().minus(anchorVision2.getRotation());
         }
     }
 
-    public Pose2d interpolate(double scalar, Pose2d pose1, Pose2d pose2) {
-        Transform2d difference = pose2.minus(pose1).times(scalar);
-        return pose1.plus(difference);
-    }
 
 
     /* Generate a number representing how far off the vision speed was from the odometry speed */
