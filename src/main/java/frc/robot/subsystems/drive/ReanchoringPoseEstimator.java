@@ -107,14 +107,15 @@ public class ReanchoringPoseEstimator {
 
     public void newVisionEntry(Pose2d visionPose, double visionTime) {
 //        Debug.println("Vision entry: ", visionTime, " System time: ", System.currentTimeMillis());
-        int matching = 0;
+        int matching = -1;
         for (int i = 0; i < odometryHistory.size(); i++) {
             if (odometryHistory.get(i).time <= visionTime) {
                 matching = i;
                 break;
             }
         }
-        if (matching == 0) {
+        if (matching == -1) {
+            System.out.println("No matching odometry entry found for vison measurement.  This shouldn't happen.");
             return;
         }
 
