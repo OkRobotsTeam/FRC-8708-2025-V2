@@ -118,7 +118,7 @@ public class ReanchoringPoseEstimator {
             System.out.println("No matching odometry entry found for vison measurement.  This shouldn't happen.");
             return;
         }
-
+        Logger.recordOutput("ReanchoringPoseEstimator/VisionLatency", Timer.getFPGATimestamp() - visionTime);
         var matchingOdometry = odometryHistory.get(matching);
         double speedDelta = calculateSpeedDelta(visionPose, odometryHistory.get(matching), visionHistory.get(0));
         visionHistory.add(0,
