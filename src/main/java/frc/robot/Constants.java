@@ -93,7 +93,7 @@ public class Constants {
         public static double[] States = { 0, 13, 22, 38, 62 };
 
         public static final TrapezoidProfile.Constraints ELEVATOR_TRAPEZOID_PROFILE = new TrapezoidProfile.Constraints(1200.0,
-                400);
+                100);  // 400);
 
         public static final double KG = 0.15;
         public static final double KP = 0.03;

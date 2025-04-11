@@ -59,6 +59,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Front Left Left to Left HP"
@@ -116,6 +122,12 @@
           "type": "named",
           "data": {
             "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
