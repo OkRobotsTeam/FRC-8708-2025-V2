@@ -19,9 +19,9 @@ public class Constants {
 
     public static class SwerveDrivetrain {
         // Physical Attributes
-        public static final double WHEELBASE_IN_METERS = 0.56515;
+        public static final double WHEELBASE_IN_METERS = 0.56515 * 2;
         public static final double DRIVEBASE_RADIUS_IN_METERS = (WHEELBASE_IN_METERS / 2) * Math.sqrt(2);
-        public static final double WHEEL_RADIUS_IN_METERS = 0.044;
+        public static final double WHEEL_RADIUS_IN_METERS = 0.0495935;
         public static final double DRIVE_GEAR_RATIO = (1.0 / 5.60);
         public static final double WHEEL_CIRCUMFERENCE_IN_METERS = WHEEL_RADIUS_IN_METERS * (Math.PI * 2);
         public static final boolean TURNING_MOTORS_INVERTED = true;
@@ -96,7 +96,7 @@ public class Constants {
                 100);  // 400);
 
         public static final double KG = 0.15;
-        public static final double KP = 0.03;
+        public static final double KP = 0.05;
         public static final double KI = 0;
         public static final double KD = 0;
         public static final boolean ENCODER_REVERSED = false;
@@ -112,7 +112,7 @@ public class Constants {
     }
 
     public static class Pickup {
-        public static boolean MOTOR_1_INVERTED = false;
+        public static boolean MOTOR_1_INVERTED = true;
         public static boolean MOTOR_2_INVERTED = true;
 
         public static int CURRENT_LIMIT_STALLED = 20;
@@ -121,8 +121,8 @@ public class Constants {
         public static double INTAKE_IN_SPEED = -1;
         public static double INTAKE_OUT_SPEED = 1;
 
-        public static double RAISED_SETPOINT = 2;
-        public static double LOWERED_SETPOINT = 9.1;
+        public static double RAISED_SETPOINT = 2.6;
+        public static double LOWERED_SETPOINT = 7;
         public static double MIDDLE_SETPOINT = 6;
 
         public static final double KP = 0.05;

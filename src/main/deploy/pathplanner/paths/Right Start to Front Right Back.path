@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.6885,
-        "y": 0.9781250000000001
+        "x": 6.301069972826087,
+        "y": 1.6375084918478249
       },
       "isLocked": false,
       "linkedName": "RightStart"
@@ -20,8 +20,8 @@
         "y": 2.2407499999999994
       },
       "prevControl": {
-        "x": 5.89875,
-        "y": 1.6508749999999999
+        "x": 6.348760190217392,
+        "y": 1.5898182744565201
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "Right Start 3 Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

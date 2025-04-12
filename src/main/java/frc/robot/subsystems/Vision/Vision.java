@@ -150,7 +150,7 @@ public class Vision extends SubsystemBase {
                 } else if (observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
                     rejectPose = true;
                     rejectionReason = "Y position outside field boundaries (0 to " + aprilTagLayout.getFieldWidth() + ").";
-                } else if (observation.averageTagDistance() > 60) {
+                } else if (observation.averageTagDistance() > 1.2) {
                     rejectPose = true;
                     rejectionReason = "Average distance to tag too high " + observation.averageTagDistance();
                 }
@@ -158,7 +158,7 @@ public class Vision extends SubsystemBase {
                 // Add pose to log
                 robotPoses.add(observation.pose());
                 if (rejectPose) {
-                    //System.out.println("Rejected vision observation: " + rejectionReason);
+                    Logger.recordOutput("Vision/RejectionReason", rejectionReason);
                     robotPosesRejected.add(observation.pose());
                 } else {
                     robotPosesAccepted.add(observation.pose());

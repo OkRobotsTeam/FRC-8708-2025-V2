@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.12125,
-        "y": 0.728
+        "x": 1.1803328804347826,
+        "y": 1.0056131114130438
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2571249999939895,
-        "y": 1.8263750000024435
+        "x": 2.316207880428772,
+        "y": 2.103988111415487
       },
       "isLocked": false,
       "linkedName": "RightHP"
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "raiseElevatorTo4",
-      "waypointRelativePos": 0.8999999999999965,
+      "waypointRelativePos": 0.7955390334572456,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

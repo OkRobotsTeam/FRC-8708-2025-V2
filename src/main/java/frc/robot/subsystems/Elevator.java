@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Debug;
 import frc.robot.MathUtils;
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.Constants.Elevator.*;
 
@@ -37,8 +38,12 @@ public class Elevator extends SubsystemBase {
         double pidOutput = elevatorPID.calculate(getElevatorPosition());
         if (currentState == 0 && Math.abs(getElevatorPosition()) < 2.0) {
             setMotors(pidOutput);
+            Logger.recordOutput("Elevator/MotorPower", pidOutput);
+
         } else {
             setMotors(pidOutput + KG);
+            Logger.recordOutput("Elevator/MotorPower", pidOutput+KG);
+
         }
     }
 

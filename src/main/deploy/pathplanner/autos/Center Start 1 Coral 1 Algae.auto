@@ -91,7 +91,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.2
           }
         },
         {
@@ -127,7 +127,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.25
+            "waitTime": 0.1
           }
         },
         {
@@ -139,43 +139,13 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Barge to Front Middle"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeIntake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeIn"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Front Middle to Front Middle Backup"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Barge Move Over"
           }
         }
       ]

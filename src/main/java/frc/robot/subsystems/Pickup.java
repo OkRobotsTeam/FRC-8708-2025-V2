@@ -37,12 +37,7 @@ public class Pickup extends SubsystemBase {
     public Pickup() {
         rotationPID.reset();
         rotationMotor.setNeutralMode(NeutralModeValue.Brake);
-        pickupMotorKraken.setNeutralMode(NeutralModeValue.Brake);
-        // SparkMaxConfig pickupMotor1Config = new SparkMaxConfig();
-        // pickupMotor1Config.inverted(MOTOR_1_INVERTED);
-        // pickupMotor1Config.smartCurrentLimit(CURRENT_LIMIT_STALLED, CURRENT_LIMIT_FREE);
-        // pickupMotor.configure(pickupMotor1Config, SparkBase.ResetMode.kNoResetSafeParameters,
-        // SparkBase.PersistMode.kPersistParameters);
+        pickupMotorKraken.setInverted(MOTOR_1_INVERTED);
         stopIntake();
     }
 

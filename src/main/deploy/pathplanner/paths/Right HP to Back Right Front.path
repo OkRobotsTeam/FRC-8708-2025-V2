@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.12125,
-        "y": 0.728
+        "x": 1.1803328804347826,
+        "y": 1.0056131114130438
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1060000000000003,
-        "y": 1.840999999999999
+        "x": 2.165082880434783,
+        "y": 2.118613111413043
       },
       "isLocked": false,
       "linkedName": "RightHP"
@@ -33,8 +33,30 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "deliver",
+      "waypointRelativePos": 0.6011683483802447,
+      "endWaypointRelativePos": 0.7530536378120022,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "deliver"
+        }
+      }
+    },
+    {
+      "name": "stopDelivery",
+      "waypointRelativePos": 0.759426447158789,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "stopDelivery"
+        }
+      }
+    },
+    {
       "name": "raiseElevatorTo4",
-      "waypointRelativePos": 0.9024096385542131,
+      "waypointRelativePos": 0.7976633032395113,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

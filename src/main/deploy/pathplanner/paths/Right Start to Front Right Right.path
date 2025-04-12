@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.172375,
-        "y": 2.879375
+        "x": 5.138620923913043,
+        "y": 2.9966796874999995
       },
       "prevControl": {
-        "x": 6.035250000000001,
-        "y": 1.4266249999999991
+        "x": 6.001495923913045,
+        "y": 1.5439296874999986
       },
       "nextControl": null,
       "isLocked": false,
@@ -60,7 +60,7 @@
   "folder": "Right Start 3 Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
