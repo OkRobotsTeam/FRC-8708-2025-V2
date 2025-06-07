@@ -137,7 +137,6 @@ public class Vision extends SubsystemBase {
                 }
                 boolean rejectPose = false;
                 String rejectionReason = "";
-
                 if (observation.tagCount() == 1 && observation.ambiguity() > maxAmbiguity) {
                     rejectPose = true;
                     rejectionReason = "Single tag has high ambiguity (greater than " + maxAmbiguity + ").";
@@ -150,7 +149,7 @@ public class Vision extends SubsystemBase {
                 } else if (observation.pose().getY() < 0.0 || observation.pose().getY() > aprilTagLayout.getFieldWidth()) {
                     rejectPose = true;
                     rejectionReason = "Y position outside field boundaries (0 to " + aprilTagLayout.getFieldWidth() + ").";
-                } else if (observation.averageTagDistance() > 1.2) {
+                } else if (observation.averageTagDistance() > 4.0) {
                     rejectPose = true;
                     rejectionReason = "Average distance to tag too high " + observation.averageTagDistance();
                 }

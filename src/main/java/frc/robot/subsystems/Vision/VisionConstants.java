@@ -16,6 +16,7 @@ package frc.robot.subsystems.Vision;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -28,6 +29,7 @@ public class VisionConstants {
     // AprilTag layout
     public static AprilTagFieldLayout aprilTagLayout;
     private static boolean usedCustomField = false;
+
     static {
         try {
             aprilTagLayout = new AprilTagFieldLayout(Path
@@ -35,7 +37,9 @@ public class VisionConstants {
                             + "/vision/andymark.json"));
             usedCustomField = true;
         } catch (Exception e) {
-            aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+            aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+            System.out.println("ERROR: FAILED TO LOAD FIRST JSON");
+            System.out.println("FALLING BACK TO k2025ReefscapeAndyMark");
         }
         Logger.recordOutput("Used Custom Field?", usedCustomField);
     }
@@ -87,18 +91,19 @@ public class VisionConstants {
 //    public static double angularStdDevBaseline = 0.6; // Radians
 
 
-    public static double linearStdDevBaseline = 0.35; // Meters
-    public static double angularStdDevBaseline = 0.7; // Radians
+    public static double linearStdDevBaseline = 0.25; // Meters
+    public static double angularStdDevBaseline = 1000000.0; // Radians
+
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
-    public static double[] cameraStdDevFactors = new double[] {
+    public static double[] cameraStdDevFactors = new double[]{
             1.0,
             1.0,
             1.0
     };
 
-    public static List<Integer> rejectedTags = Arrays.asList(2, 3, 4, 5, 13, 14, 15, 16);
+    public static List<Integer> rejectedTags = Arrays.asList(1, 2, 3, 4, 5, 12, 13, 14, 15, 16);
     public static List<Integer> reefTags = Arrays.asList(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
 
     //public static List<Integer> rejectedTags = List.of();

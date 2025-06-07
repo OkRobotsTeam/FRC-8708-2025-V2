@@ -112,10 +112,11 @@ public class DriveCommands {
 
                     linearVelocity = linearVelocity.times(drive.getSpeed());
 
-                    double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
-                    if (speedOverrideButton.getAsBoolean()) {
-                        slowdownDueToElevator = 1;
-                    }
+                    double slowdownDueToElevator = 0.2;
+//                    double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+//                    if (speedOverrideButton.getAsBoolean()) {
+//                        slowdownDueToElevator = 1;
+//                    }
 
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
                     omega = Math.copySign(omega * omega, omega);
@@ -366,11 +367,12 @@ public class DriveCommands {
                         Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
                         //                            System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
 
-                        double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+                        double slowdownDueToElevator = 0.2;
+//                        double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
 
-                        if (speedOverrideButton.getAsBoolean()) {
-                            slowdownDueToElevator = 1;
-                        }
+//                        if (speedOverrideButton.getAsBoolean()) {
+//                            slowdownDueToElevator = 1;
+//                        }
 
                         // Send to drive
                         drive.runVelocity(

@@ -52,7 +52,7 @@ public class RobotContainer {
     // Controllers
     private final CommandXboxController driveController = new CommandXboxController(0);
     private final CommandXboxController manipulatorController = new CommandXboxController(1);
-//    private final CommandGenericHID elevatorButtons = new CommandGenericHID(2);
+    private final CommandGenericHID elevatorButtons = new CommandGenericHID(2);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -317,11 +317,11 @@ public class RobotContainer {
 
         manipulatorController.povLeft().onTrue(Commands.runOnce(pickup::middlePickup));
 
-//        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
-//        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
-//        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
-//        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
-//        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
+        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
+        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
+        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
+        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
+        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
 
 
         driveController.rightTrigger().onTrue(Commands.runOnce(
@@ -341,7 +341,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("raiseElevatorTo2", new InstantCommand(() -> elevator.transitionToState(2)));
         NamedCommands.registerCommand("raiseElevatorTo1", new InstantCommand(() -> elevator.transitionToState(1)));
         NamedCommands.registerCommand("lowerElevator", new InstantCommand(() -> elevator.transitionToState(0)));
-        NamedCommands.registerCommand("deliver", new InstantCommand(() -> delivery.setDeliveryMotor(-0.3)));
+        NamedCommands.registerCommand("deliver", new InstantCommand(() -> delivery.setDeliveryMotor(-0.25)));
         NamedCommands.registerCommand("deliveryIn", new InstantCommand(() -> delivery.setDeliveryMotor(0.4)));
         NamedCommands.registerCommand("stopDelivery", new InstantCommand(() -> delivery.setDeliveryMotor(0)));
         NamedCommands.registerCommand("algaeOut", new InstantCommand(pickup::lowerPickup));
