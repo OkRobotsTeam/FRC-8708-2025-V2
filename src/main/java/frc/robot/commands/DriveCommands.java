@@ -13,6 +13,7 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix6.swerve.SwerveModule;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.AngleUnit;
@@ -33,9 +35,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.Vision.VisionConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.TuneableProfiledPID;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -43,6 +47,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.Logger;
 import frc.robot.Debug;
 
@@ -98,9 +103,7 @@ public class DriveCommands {
             DoubleSupplier omegaSupplier,
             DoubleSupplier leftTrigger,
             DoubleSupplier elevatorHeightInches,
-            BooleanSupplier speedOverrideButton)
-
-    {
+            BooleanSupplier wheelsCrossed) {
         return Commands.run(
                 () -> {
 //
@@ -112,11 +115,8 @@ public class DriveCommands {
 
                     linearVelocity = linearVelocity.times(drive.getSpeed());
 
-                    double slowdownDueToElevator = 0.2;
-//                    double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
-//                    if (speedOverrideButton.getAsBoolean()) {
-//                        slowdownDueToElevator = 1;
-//                    }
+//                    double slowdownDueToElevator = 0.2;
+                    double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
 
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
                     omega = Math.copySign(omega * omega, omega);
@@ -130,12 +130,20 @@ public class DriveCommands {
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
 
-                    drive.runVelocity(
-                            ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    speeds,
-                                    isFlipped
-                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                                            : drive.getRotation()));
+
+                    if (wheelsCrossed.getAsBoolean()) {
+                        // If the wheelsCrossed flag is true then stop all movement and force the wheels
+                        // into a diamond shape for more traction
+                        // This is useful if we are being pushed
+                        drive.stopWithX();
+                    } else {
+                        drive.runVelocity(
+                                ChassisSpeeds.fromFieldRelativeSpeeds(
+                                        speeds,
+                                        isFlipped
+                                                ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                                : drive.getRotation()));
+                    }
                 },
                 drive);
     }
@@ -161,31 +169,31 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-                () -> {
-                    currentDriveMode = DriveMode.dmAngle;
-                    // Get linear velocity
-                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                            ySupplier.getAsDouble());
+                        () -> {
+                            currentDriveMode = DriveMode.dmAngle;
+                            // Get linear velocity
+                            Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                                    ySupplier.getAsDouble());
 
-                    // Calculate angular speed
-                    double omega = angleController.calculate(
-                            drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+                            // Calculate angular speed
+                            double omega = angleController.calculate(
+                                    drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
 
-                    // Convert to field relative speeds & send command
-                    ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                            omega);
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
-                    drive.runVelocity(
-                            ChassisSpeeds.fromFieldRelativeSpeeds(
-                                    speeds,
-                                    isFlipped
-                                            ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                                            : drive.getRotation()));
-                },
-                drive)
+                            // Convert to field relative speeds & send command
+                            ChassisSpeeds speeds = new ChassisSpeeds(
+                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                                    omega);
+                            boolean isFlipped = DriverStation.getAlliance().isPresent()
+                                    && DriverStation.getAlliance().get() == Alliance.Red;
+                            drive.runVelocity(
+                                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                                            speeds,
+                                            isFlipped
+                                                    ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                                                    : drive.getRotation()));
+                        },
+                        drive)
 
                 // Reset PID controller when command starts
                 .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
@@ -223,13 +231,13 @@ public class DriveCommands {
 
         // Construct command
         return Commands.run(
-                () -> {
-                    currentDriveMode = DriveMode.dmApproach;
-                    // Name constants
+                        () -> {
+                            currentDriveMode = DriveMode.dmApproach;
+                            // Name constants
 
-                    Translation2d currentTranslation = drive.getPose().getTranslation();
-                    Translation2d approachTranslation = approachSupplier.get().getTranslation();
-                    Logger.recordOutput("AlignDebug/approachSupplier", approachSupplier.get());
+                            Translation2d currentTranslation = drive.getPose().getTranslation();
+                            Translation2d approachTranslation = approachSupplier.get().getTranslation();
+                            Logger.recordOutput("AlignDebug/approachSupplier", approachSupplier.get());
 //                    Translation2d approachTranslation = getNe;
 
                             double distanceToApproach = currentTranslation.getDistance(approachTranslation);
@@ -250,13 +258,13 @@ public class DriveCommands {
 //                        distanceToGoal = Units.inchesToMeters(9.25);
 //                    }
 
-                    SmartDashboard.putNumber("Distance To Goal", distanceToGoal);
-                    SmartDashboard.putNumber("Distance To Approach", distanceToApproach);
+                            SmartDashboard.putNumber("Distance To Goal", distanceToGoal);
+                            SmartDashboard.putNumber("Distance To Approach", distanceToApproach);
 
-                    // Calculate lateral linear velocity
-                    Translation2d offsetVector = new Translation2d(
-                            alignController.calculate(distanceToGoal), 0)
-                            .rotateBy(robotToGoal.getAngle());
+                            // Calculate lateral linear velocity
+                            Translation2d offsetVector = new Translation2d(
+                                    alignController.calculate(distanceToGoal), 0)
+                                    .rotateBy(robotToGoal.getAngle());
 
                             Logger.recordOutput("AlignDebug/distanceToGoal", distanceToGoal);
 
@@ -367,12 +375,12 @@ public class DriveCommands {
                         Translation2d fieldRelativeVel = tagRelativeVel.rotateBy(tagRotation);
                         //                            System.out.println("Field-relative velocity: X = " + fieldRelativeVel.getX() + " m/s, Y = " + fieldRelativeVel.getY() + " m/s");
 
-                        double slowdownDueToElevator = 0.2;
-//                        double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
-
-//                        if (speedOverrideButton.getAsBoolean()) {
-//                            slowdownDueToElevator = 1;
-//                        }
+//                        double slowdownDueToElevator = 0.2;
+                        double slowdownDueToElevator = 1 - Math.min(elevatorHeightInches.getAsDouble(), 30.0) / 32.0;
+//
+                        if (speedOverrideButton.getAsBoolean()) {
+                            slowdownDueToElevator = 1;
+                        }
 
                         // Send to drive
                         drive.runVelocity(
@@ -419,13 +427,13 @@ public class DriveCommands {
 
                 // Accelerate and gather data
                 Commands.run(
-                        () -> {
-                            double voltage = timer.get() * FF_RAMP_RATE;
-                            drive.runCharacterization(voltage);
-                            velocitySamples.add(drive.getFFCharacterizationVelocity());
-                            voltageSamples.add(voltage);
-                        },
-                        drive)
+                                () -> {
+                                    double voltage = timer.get() * FF_RAMP_RATE;
+                                    drive.runCharacterization(voltage);
+                                    velocitySamples.add(drive.getFFCharacterizationVelocity());
+                                    voltageSamples.add(voltage);
+                                },
+                                drive)
 
                         // When cancelled, calculate and print results
                         .finallyDo(
@@ -452,7 +460,9 @@ public class DriveCommands {
                                 }));
     }
 
-    /** Measures the robot's wheel radius by spinning in a circle. */
+    /**
+     * Measures the robot's wheel radius by spinning in a circle.
+     */
     public static Command wheelRadiusCharacterization(Drive drive) {
         SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
         WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
@@ -489,11 +499,11 @@ public class DriveCommands {
 
                         // Update gyro delta
                         Commands.run(
-                                () -> {
-                                    var rotation = drive.getRotation();
-                                    state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
-                                    state.lastAngle = rotation;
-                                })
+                                        () -> {
+                                            var rotation = drive.getRotation();
+                                            state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
+                                            state.lastAngle = rotation;
+                                        })
 
                                 // When cancelled, calculate and print results
                                 .finallyDo(

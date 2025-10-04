@@ -26,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Module {
     private final ModuleIO io;
-    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final ModuleIO.ModuleIOInputs inputs = new ModuleIO.ModuleIOInputs();
     private final int index;
     private final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> constants;
 
@@ -55,7 +55,7 @@ public class Module {
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+//        Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
         // Calculate positions for odmetry
         int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together

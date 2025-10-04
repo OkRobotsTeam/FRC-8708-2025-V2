@@ -91,7 +91,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     public Field2d fieldMap = new Field2d();
     static final Lock odometryLock = new ReentrantLock();
     private final GyroIO gyroIO;
-    private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+    private final GyroIO.GyroIOInputs gyroInputs = new GyroIO.GyroIOInputs();
     private final Module[] modules = new Module[4]; // FL, FR, BL, BR
     private final SysIdRoutine sysId;
     private final Alert gyroDisconnectedAlert = new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
@@ -166,7 +166,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     public void periodic() {
         odometryLock.lock(); // Prevents odometry updates while reading data
         gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("Drive/Gyro", gyroInputs);
+//        Logger.processInputs("Drive/Gyro", gyroInputs);
         for (var module : modules) {
             module.periodic();
         }

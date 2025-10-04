@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.Delivery.CONVEYOR_IN_SPEED;
+import static frc.robot.Constants.Delivery.CONVEYOR_OUT_SPEED;
 import static frc.robot.commands.DriveCommands.oldJoystickApproach;
 import static frc.robot.subsystems.Vision.VisionConstants.*;
 import static java.lang.Math.abs;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -39,6 +41,7 @@ import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Pickup;
 import frc.robot.subsystems.Elevator;
+import frc.robot.util.Elastic;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -57,6 +60,7 @@ public class RobotContainer {
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
     private final LoggedDashboardChooser<String> autoLineUp;
+    private final LoggedDashboardChooser<Double> speedChooser;
     private final LoggedDashboardChooser<String> visionMode;
 
 
@@ -91,9 +95,14 @@ public class RobotContainer {
         registerNamedCommands();
 
 
-        autoLineUp = new LoggedDashboardChooser<>("Drive Speed");
+        autoLineUp = new LoggedDashboardChooser<>("Auto Line Up");
+        speedChooser = new LoggedDashboardChooser<>("Drive Speed");
 
         autoLineUp.addDefaultOption("Old Line Up", "Old Line Up");
+        speedChooser.addDefaultOption("100%", 1.0);
+        speedChooser.addOption("75%", 0.75);
+        speedChooser.addOption("50%", 0.50);
+        speedChooser.addOption("25%", 0.25);
         autoLineUp.addOption("New Line Up", "New Line Up");
         // Set up auto routines
         visionMode = new LoggedDashboardChooser<>("Vision Mode");
@@ -123,6 +132,8 @@ public class RobotContainer {
 
         // Configure the controller button and joystick bindings
         configureControllerBindings();
+//        configureControllerBindingsDemoTwoControllers();
+//        configureControllerBindingsParade();
 
         // Detect if controllers are missing / Stop multiple warnings
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -142,12 +153,18 @@ public class RobotContainer {
                 delivery.setDeliveryMotor(
                         (-manipulatorController.getHID().getRightTriggerAxis() / 4.0));
             }
+            if (Math.abs(driveController.getHID().getRightTriggerAxis()) > 0.55) {
+                delivery.setDeliveryMotor(
+                        (-driveController.getHID().getRightTriggerAxis() / 4.0));
+            }
         }, delivery));
+
 
         pickup.raisePickup();
     }
 
     public void periodic() {
+        SmartDashboard.putNumber("EncoderPositionInches", elevator.getElevatorPosition());
     }
     public void teleopPeriodic() {
         if (Math.abs(manipulatorController.getHID().getRightY()) > 0.2) {
@@ -181,15 +198,16 @@ public class RobotContainer {
 
     public void testPeriodic() {
         teleopPeriodic();
+
     }
 
     private Command joystickDrive() {
         return DriveCommands.joystickDrive(
                 driveController,
                 swerveDrivetrain,
-                () -> -driveController.getLeftY(),
-                () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX(),
+                () -> -driveController.getLeftY() * speedChooser.get(),
+                () -> -driveController.getLeftX() * speedChooser.get(),
+                () -> -driveController.getRightX() * speedChooser.get(),
                 () -> -driveController.getLeftTriggerAxis(),
                 elevator::getElevatorPosition,
                 driveController.x());
@@ -304,6 +322,7 @@ public class RobotContainer {
         manipulatorController.leftTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
 
         manipulatorController.rightTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
+        driveController.rightTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
 
         manipulatorController.y().onTrue(Commands.runOnce(elevator::toggleHigh));
 
@@ -315,6 +334,8 @@ public class RobotContainer {
 
         manipulatorController.x().onTrue(Commands.runOnce(pickup::togglePickup));
 
+        driveController.a().onTrue(Commands.runOnce(() -> pickup.raisePickupToPosition(2.0)));
+
         manipulatorController.povLeft().onTrue(Commands.runOnce(pickup::middlePickup));
 
         elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
@@ -324,11 +345,137 @@ public class RobotContainer {
         elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
 
 
+        driveController.leftTrigger().onTrue(Commands.runOnce(
+                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
+                Commands.waitSeconds(0.5).andThen(
+                        () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0))));
+
+    }
+
+    private void configureControllerBindingsDemoTwoControllers() {
+        // Default command, normal field-relative drive
+        swerveDrivetrain.setDefaultCommand(joystickDrive());
+        driveController.a().onTrue(
+                Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
+
+//         Driver Right Bumper: Approach Nearest Right-Side Reef Branch
+        driveController.rightBumper().and(() -> Objects.equals(autoLineUp.get(), "New Line Up"))
+                .whileTrue(
+                        joystickApproach(
+                                () -> getPoseOfNearestReefBranch(FieldConstants.ReefSide.RIGHT)
+                        )
+                );
+
+        // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
+        driveController.leftBumper().and(() -> Objects.equals(autoLineUp.get(), "New Line Up"))
+                .whileTrue(
+                        joystickApproach(
+                                () -> getPoseOfNearestReefBranch(FieldConstants.ReefSide.LEFT)
+                        )
+                );
+
+
+        // Driver Right Bumper: Approach Nearest Right-Side Reef Branch
+        driveController.rightBumper().and(() -> Objects.equals(autoLineUp.get(), "Old Line Up"))
+                .whileTrue(
+                        oldJoystickApproach(
+                                swerveDrivetrain,
+                                driveController::getLeftY,
+                                driveController::getLeftX,
+                                elevator::getElevatorPosition,
+                                () -> driveController.x().getAsBoolean(),
+                                () -> true));
+
+        // Driver Left Bumper: Approach Nearest Left-Side Reef Branch
+        driveController.leftBumper().and(() -> Objects.equals(autoLineUp.get(), "Old Line Up"))
+                .whileTrue(
+                        oldJoystickApproach(
+                                swerveDrivetrain,
+                                driveController::getLeftY,
+                                driveController::getLeftX,
+                                elevator::getElevatorPosition,
+                                () -> driveController.x().getAsBoolean(),
+                                () -> false));
+
+
+//
+        manipulatorController.povUp().onTrue(Commands.runOnce(elevator::nextState));
+        manipulatorController.povDown().onTrue(Commands.runOnce(elevator::previousState));
+
+//        manipulatorController.leftBumper().and(manipulatorController.rightBumper().negate())
+//                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+//        manipulatorController.rightBumper().and(manipulatorController.leftBumper().negate())
+//                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+//        manipulatorController.leftBumper().and(manipulatorController.rightBumper())
+//                .onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
+//        manipulatorController.leftBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
+//        manipulatorController.rightBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
+
+        manipulatorController.leftTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_IN_SPEED)));
+        manipulatorController.leftTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
+
+        manipulatorController.rightTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
+
+        manipulatorController.y().onTrue(Commands.runOnce(elevator::toggleHigh));
+
+//        manipulatorController.a().onTrue(Commands.runOnce(pickup::lowerPickup));
+//        manipulatorController.a().onFalse(Commands.runOnce(pickup::raisePickup));
+
+//        manipulatorController.b().onTrue(Commands.runOnce(pickup::runIntakeOut));
+//        manipulatorController.b().onFalse(Commands.runOnce(pickup::stopIntake));
+
+//        manipulatorController.x().onTrue(Commands.runOnce(pickup::togglePickup));
+
+//        driveController.a().onTrue(Commands.runOnce(() -> pickup.raisePickupToPosition(2.0)));
+
+//        manipulatorController.povLeft().onTrue(Commands.runOnce(pickup::middlePickup));
+
+//        elevatorButtons.button(1).onTrue(Commands.runOnce(() -> elevator.transitionToState(4)));
+//        elevatorButtons.button(2).onTrue(Commands.runOnce(() -> elevator.transitionToState(3)));
+//        elevatorButtons.button(3).onTrue(Commands.runOnce(() -> elevator.transitionToState(2)));
+//        elevatorButtons.button(4).onTrue(Commands.runOnce(() -> elevator.transitionToState(1)));
+//        elevatorButtons.button(5).onTrue(Commands.runOnce(() -> elevator.transitionToState(0)));
+
+
         driveController.rightTrigger().onTrue(Commands.runOnce(
                 () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0)).andThen(
-                        Commands.waitSeconds(0.5).andThen(
-                                () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0))));
+                Commands.waitSeconds(0.5).andThen(
+                        () -> manipulatorController.setRumble(GenericHID.RumbleType.kBothRumble, 0.0))));
 
+    }
+
+    private void configureControllerBindingsParade() {
+        // Default command, normal field-relative drive
+        swerveDrivetrain.setDefaultCommand(joystickDrive());
+        driveController.a().onTrue(
+                Commands.runOnce(() -> swerveDrivetrain.setPose(new Pose2d())));
+
+        driveController.povUp().onTrue(Commands.runOnce(elevator::nextState));
+        driveController.povDown().onTrue(Commands.runOnce(elevator::previousState));
+
+        driveController.leftBumper().and(driveController.rightBumper().negate())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+        driveController.rightBumper().and(driveController.leftBumper().negate())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(-1.0)));
+        driveController.leftBumper().and(driveController.rightBumper())
+                .onTrue(Commands.runOnce(() -> climber.setSpeed(1.0)));
+        driveController.leftBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
+        driveController.rightBumper().onFalse(Commands.runOnce(() -> climber.setSpeed(0.0)));
+
+        driveController.leftTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_IN_SPEED)));
+        driveController.leftTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
+
+        driveController.rightTrigger().onTrue(Commands.runOnce(() -> delivery.setDeliveryMotor(CONVEYOR_OUT_SPEED)));
+        driveController.rightTrigger().onFalse(Commands.runOnce(() -> delivery.setDeliveryMotor(0)));
+
+        driveController.y().onTrue(Commands.runOnce(pickup::runIntakeIn));
+        driveController.y().onFalse(Commands.runOnce(pickup::stopIntake));
+
+        driveController.b().onTrue(Commands.runOnce(pickup::runIntakeOut));
+        driveController.b().onFalse(Commands.runOnce(pickup::stopIntake));
+
+        driveController.x().onTrue(Commands.runOnce(pickup::lowerPickup));
+        driveController.x().onFalse(Commands.runOnce(pickup::raisePickup));
     }
 
     /**
@@ -346,6 +493,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopDelivery", new InstantCommand(() -> delivery.setDeliveryMotor(0)));
         NamedCommands.registerCommand("algaeOut", new InstantCommand(pickup::lowerPickup));
         NamedCommands.registerCommand("algaeIn", new InstantCommand(pickup::raisePickup));
+        NamedCommands.registerCommand("algaeInFarther", new InstantCommand(() -> pickup.raisePickupToPosition(2.0)));
         NamedCommands.registerCommand("algaeHalfway", new InstantCommand(pickup::middlePickup));
         NamedCommands.registerCommand("algaeInAllTheWay", new InstantCommand(pickup::foldPickup));
         NamedCommands.registerCommand("algaeIntake", new InstantCommand(() -> pickup.setIntakeMotors(-1)));

@@ -13,25 +13,97 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Start to Center Move"
+            "pathName": "Left Start to Front Left Left Back"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Move to Front Right"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorTo4"
+            "pathName": "Front Left Left Back to Front Left Left"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "waitForElevatorPrecise"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "deliver"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "algaeIn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopDelivery"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Front Left Left to Left HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForElevator"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "raiseElevatorTo1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left HP to Back Left Front"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForElevatorPrecise"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
@@ -55,7 +127,19 @@
         {
           "type": "named",
           "data": {
-            "name": "raiseElevatorTo3"
+            "name": "lowerElevator"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Back Left Front to Left HP"
           }
         },
         {
@@ -65,27 +149,21 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Front Right to Front Left Back"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "algaeHalfway"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeIntake"
+            "name": "raiseElevatorTo1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Front Left Back to Front Left Middle"
+            "pathName": "Left HP to Back Left Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "waitForElevatorPrecise"
           }
         },
         {
@@ -97,55 +175,31 @@
         {
           "type": "named",
           "data": {
-            "name": "algaeInFarther"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Front Left Middle to Right Barge"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseElevatorToAlgae"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "waitForElevatorPrecise"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "algaeOuttake"
+            "name": "deliver"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.4
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "algaeStop"
+            "name": "algaeInAllTheWay"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopDelivery"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "lowerElevator"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Barge Move Over"
           }
         }
       ]

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.Encoder;
@@ -7,6 +8,7 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Debug;
 import frc.robot.MathUtils;
 import org.littletonrobotics.junction.Logger;
@@ -14,8 +16,8 @@ import org.littletonrobotics.junction.Logger;
 import static frc.robot.Constants.Elevator.*;
 
 public class Elevator extends SubsystemBase {
-    private final PWMSparkMax motor1 = new PWMSparkMax(Ports.MOTOR_1);
-    private final PWMSparkMax motor2 = new PWMSparkMax(Ports.MOTOR_2);
+    private final TalonFX motor1 = new TalonFX(Ports.MOTOR_1);
+    private final TalonFX motor2 = new TalonFX(Ports.MOTOR_2);
     Encoder encoder = new Encoder(Ports.ENCODER_CHANNEL_A, Ports.ENCODER_CHANNEL_B, ENCODER_REVERSED, ENCODER_ENCODING_TYPE);
 
     public final ProfiledPIDController elevatorPID = new ProfiledPIDController(KP, KI, KD, ELEVATOR_TRAPEZOID_PROFILE);
@@ -36,10 +38,10 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
         double pidOutput = elevatorPID.calculate(getElevatorPosition());
+
         if (currentState == 0 && Math.abs(getElevatorPosition()) < 2.0) {
             setMotors(pidOutput);
             Logger.recordOutput("Elevator/MotorPower", pidOutput);
-
         } else {
             setMotors(pidOutput + KG);
             Logger.recordOutput("Elevator/MotorPower", pidOutput+KG);
